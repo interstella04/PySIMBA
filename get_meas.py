@@ -60,4 +60,4 @@ data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
 
 for i in range(4):
-    Meas.store_in_pickle(Meas.GrabMeasurement(data_tag_list[i],data_label_list[i]))
+    Meas.store_in_pickle(GrabMeasurement(data_tag_list[i],data_label_list[i]))
