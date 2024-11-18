@@ -4,8 +4,8 @@ import pandas as pd
 
 class Meas:
 
-    def store_in_pickle(dictio):
-        with open(dictio["Label"]+".pkl", "wb") as file:
+    def store_in_pickle(dictio, tag):
+        with open(tag+".pkl", "wb") as file:
             pickle.dump(dictio,file)
         return
             

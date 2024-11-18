@@ -54,10 +54,10 @@ def GrabMeasurement(Tag, Label):
     return measDict
 
 # We can change the titles of the Plots here
-data_label_list = ["Babar Inclusive Spectra", "Babar Hadronic tag", "Babar Semileptonic", "Belle"]
+data_label_list = ["Babar Inclusive Spectra", "Babar Hadronic Tag", "Babar Semileptonic", "Belle"]
 
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
 
 for i in range(4):
-    Meas.store_in_pickle(GrabMeasurement(data_tag_list[i],data_label_list[i]))
+    Meas.store_in_pickle(GrabMeasurement(data_tag_list[i],data_label_list[i]), data_tag_list[i])
