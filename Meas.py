@@ -20,16 +20,20 @@ class Meas:
                     '035', '045', '055', '065', '075', '085', '095', '0475',
                     '0525', '0625']'''
         bins = []
+        width = []
         curr_block = []
         count = 0
         #for j in range(np.size(end_nll)):
         with open('theory/'+ key + '_NNLLNNLO_la07.txt', 'r') as file:
             for i, line in enumerate(file):
-                if i < 18:  # jumps to line 19, only correct for NNLLNNLO Data
+                if i < 17:  # jumps to line 18, only correct for NNLLNNLO Data
                     continue
                 line = line.strip()  # removes empty lines
                 if line.startswith("# bin"):  # skips line starting with # bin
-                    #line = line.strip("# bin = %d {fEg}" % count)
+                    line = line.strip('# bin = %d {fEg, }' % (count,))
+                    print(line)
+                    width.append(tuple(map(float, line.split(','))))
+                    count+=1
                     continue
                 if line == "":
                     if curr_block:  # if current block not empty
@@ -42,16 +46,9 @@ class Meas:
         if curr_block:
             bins.append(np.array(curr_block, dtype=float))
         
-        return bins
-        
-string = '# bin = 0 {fEg, 1.9, 2.}'
-string = string.strip('# bin = 0 {fEg, }')
-print(string)
+        return bins,width
 
-
-'''
-bins = Meas.grab_theory('babar_hadtag')
+bins, width = Meas.grab_theory('babar_hadtag')
 
 for i, arr in enumerate(bins):
-    print(f"Bin = {i}:\n{arr}\n")
-'''
+    print(f"Bin = {i} in range {width[i]}:\n{arr}\n")
