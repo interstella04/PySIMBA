@@ -58,13 +58,13 @@ class Plot:
               
         ax.set_xlabel('$E[\\mathrm{GeV}]$', fontsize = 16, loc = "right")
         ax.set_title('$\\mathrm{%s}$' % self.dictio_of_dictios[key]["Label"],fontsize = 20)
-        plt.savefig('data/'+self.dictio_of_dictios[key]["Label"], dpi = 500)
+        plt.savefig('data/'+key, dpi = 500)
 
 h1 = Plot()
 h2 = Plot()
 h3 = Plot()
 h4 = Plot()
-h1.simple_plot('Babar_hadtag')
-h2.simple_plot('Belle')
-h3.simple_plot('Babar_sem')
-h4.simple_plot('Babar_incl')
+h1.simple_plot('Babar_hadtag', box_opt= True)
+h2.simple_plot('Belle', box_opt=True)
+h3.simple_plot('Babar_sem', box_opt= True)
+h4.simple_plot('Babar_incl', box_opt= True)

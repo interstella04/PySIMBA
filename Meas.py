@@ -21,28 +21,34 @@ class Meas:
                     '0525', '0625']'''
         bins = []
         curr_block = []
+        count = 0
         #for j in range(np.size(end_nll)):
         with open('theory/'+ key + '_NNLLNNLO_la07.txt', 'r') as file:
-            for i, zeile in enumerate(file):
+            for i, line in enumerate(file):
                 if i < 18:  # jumps to line 19, only correct for NNLLNNLO Data
                     continue
-                zeile = zeile.strip()  # removes empty lines
-                if zeile.startswith("# bin"):  # skips line starting with # bin
+                line = line.strip()  # removes empty lines
+                if line.startswith("# bin"):  # skips line starting with # bin
+                    #line = line.strip("# bin = %d {fEg}" % count)
                     continue
-                if zeile == "":
+                if line == "":
                     if curr_block:  # if current block not empty
                         bins.append(np.array(curr_block, dtype=float))
                         curr_block = []
                 else:
                     # extract numbers out of line and put them into an array
-                    curr_block.append(list(map(float, zeile.split())))
+                    curr_block.append(list(map(float, line.split())))
 
         if curr_block:
             bins.append(np.array(curr_block, dtype=float))
         
         return bins
         
-        
+string = '# bin = 0 {fEg, 1.9, 2.}'
+string = string.strip('# bin = 0 {fEg, }')
+print(string)
+
+
 '''
 bins = Meas.grab_theory('babar_hadtag')
 
