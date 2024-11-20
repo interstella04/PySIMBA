@@ -17,15 +17,24 @@ class Meas:
     '''Function to grab theory, currently just for one NNLLNNLO data'''
     def grab_theory(key, mid):
 
-        if mid == 'NNLLNNLO':
-            end_NLL = ['03', '07']
-            '''['03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
+        end_NLL = ['03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
                     '035', '045', '055', '065', '075', '085', '095', '0475',
-                    '0525', '0625']'''
-        else:
-            print('wurde noch nicht implementiert ^^ ')
-            return
+                    '0525', '0575' , '0625']
         
+        mids = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
+
+        if mid == mids[0]:
+            start_line = 17
+        elif mid == mids[5] or mid == mids[4]:
+            start_line = 12
+        else:
+            start_line = 13
+
+        if key == 'babar_sem':
+            strip_string = '{fmX2, }'
+        else:
+            strip_string = '{fEgY, }'
+
         collected_data = {}
 
         for j, end in enumerate(end_NLL):
@@ -33,13 +42,14 @@ class Meas:
             curr_block = []
             bins = []
             width = []
-            with open('theory/'+ key + '_'+mid+'_la'+end+'.txt', 'r') as file:
+            with open('../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_expx3/'+ key + '_'+ mid +'_la'+ end +'.txt', 'r') as file:
                 for i, line in enumerate(file):
-                    if i < 17:  # jumps to line 18, only correct for NNLLNNLO Data
+                    if i < start_line:  # jumps to line 18, only correct for NNLLNNLO Data
                         continue
                     line = line.strip()  # removes empty lines
-                    if line.startswith("# bin"):  # skips line starting with # bin
-                        line = line.strip('# bin = %d {fEgY, }' % (count,))
+                    if line.startswith("# bin ") :  # skips line starting with # bin
+                        line = line.strip('# bin = %d' % (count,))
+                        line = line.strip('%s' % strip_string)
                         width.append(list(map(float, line.split(','))))
                         count+=1
                         continue
@@ -63,10 +73,37 @@ class Meas:
             collected_data['la'+end] = theo_dictio
 
         return collected_data
+    
+    def grab_mids(key):
+        mids = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
+        final_data = {}
 
-d = Meas.grab_theory('babar_hadtag', 'NNLLNNLO')
+        for i,mid in enumerate(mids):
+            print('%s' % mid)
+            final_data['%s' % (mid,)] = Meas.grab_theory(key, mid)
+        return final_data
 
-print(d['la07']['width'])
+
+theory_dictionary = {
+    "babar_hadtag_theo": Meas.grab_mids('babar_hadtag'),
+    "babar_incl_theo": Meas.grab_mids('babar_incl'),
+    "babar_sem_theo": Meas.grab_mids('babar_sem'),
+    "belle_theo": Meas.grab_mids('belle')
+    }
+
+Meas.store_in_pickle(theory_dictionary, 'theory/theory_dictionary_expx3')
+
+
+#d = Meas.grab_theory('belle', 'NNLLNNLO')
+#print(d['la03']['width'])
+
+'''
+s = '# bin = 12 {fEgY, 2., 2.05}'
+s = s.strip('# bin = 12')
+print(s)
+s = s.strip('{fEgY, }')
+print(s)
+'''
 '''
 for i, arr in enumerate(bins):
     print(f"Bin = {i} in range {width[i]}:\n{arr}\n")
