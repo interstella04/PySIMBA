@@ -17,26 +17,32 @@ class Meas:
     '''Function to grab theory, currently just for one NNLLNNLO data'''
     def grab_theory(key, mid):
 
+        #possible Endings of the data (lambda)
         end_NLL = ['03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
                     '035', '045', '055', '065', '075', '085', '095', '0475',
                     '0525', '0575' , '0625']
         
+        # middle name of the data given by mid
         mids = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
 
+        # Different start lines of the data
         if mid == mids[0]:
             start_line = 17
         elif mid == mids[5] or mid == mids[4]:
             start_line = 12
         else:
             start_line = 13
-
+        
+        # Different Strings to be deletet in the Data
         if key == 'babar_sem':
             strip_string = '{fmX2, }'
         else:
             strip_string = '{fEgY, }'
 
+        # Dictionary with all data for a specific experiment and a specific mid 
         collected_data = {}
 
+        #Reading out the data, currently works only with a specific structur of folders
         for j, end in enumerate(end_NLL):
             count = 0
             curr_block = []
@@ -79,7 +85,6 @@ class Meas:
         final_data = {}
 
         for i,mid in enumerate(mids):
-            print('%s' % mid)
             final_data['%s' % (mid,)] = Meas.grab_theory(key, mid)
         return final_data
 
