@@ -1,9 +1,5 @@
 import numpy as np
-import pickle
 import matplotlib.pyplot as plt 
-import matplotlib.cm as cm
-import pandas as pd
-from pathlib import Path
 from Meas import Meas
 from matplotlib import rc
 
@@ -14,32 +10,28 @@ plt.rcParams.update({'font.size': 13})
 class Plot:
     
     def __init__(self):
-        self.dictio_of_dictios = {
-            "Babar_incl": Meas.pickle_to_dict("babar_incl"),
-            "Babar_hadtag": Meas.pickle_to_dict("babar_hadtag"),
-            "Babar_sem": Meas.pickle_to_dict("babar_sem"),
-            "Belle": Meas.pickle_to_dict("belle")
-            }
+        self.measurement = Meas()
         return
         
     def simple_plot(self, key, div_bin = False, box_opt = False):
 
+        self.measurement.exp_data
         fig, ax = plt.subplots()
 
-        x = np.zeros(np.size(self.dictio_of_dictios[key]['dBFs']))
-        dx = np.zeros(np.size(self.dictio_of_dictios[key]['dBFs']))
+        x = np.zeros(np.size(self.measurement.exp_data[key]['dBFs']))
+        dx = np.zeros(np.size(self.measurement.exp_data[key]['dBFs']))
         
-        for i in range(np.size(self.dictio_of_dictios[key]['dBFs'])):
-            dx[i] = (self.dictio_of_dictios[key]['Bins'][i+1] - self.dictio_of_dictios[key]['Bins'][i])/2
-            x[i] = dx[i]+self.dictio_of_dictios[key]['Bins'][i]
+        for i in range(np.size(self.measurement.exp_data[key]['dBFs'])):
+            dx[i] = (self.measurement.exp_data[key]['Bins'][i+1] - self.measurement.exp_data[key]['Bins'][i])/2
+            x[i] = dx[i]+self.measurement.exp_data[key]['Bins'][i]
         
         # Divide by the width of the bin or not
         if(div_bin == False):
-            y = self.dictio_of_dictios[key]['dBFs']
-            dy = self.dictio_of_dictios[key]['dBFErrors']
+            y = self.measurement.exp_data[key]['dBFs']
+            dy = self.measurement.exp_data[key]['dBFErrors']
         else:
-            y = self.dictio_of_dictios[key]['dBFs']/dx
-            dy = self.dictio_of_dictios[key]['dBFErrors']/dx
+            y = self.measurement.exp_data[key]['dBFs']/dx
+            dy = self.measurement.exp_data[key]['dBFErrors']/dx
 
         #Set Box options
         if (box_opt):
@@ -57,14 +49,40 @@ class Plot:
             ax.set_ylabel('$\\Delta B \\left( B \\rightarrow X_S \\gamma \\right) \\: [10^{-4}  / 0.1 \\mathrm{GeV}]$', fontsize = 16)
               
         ax.set_xlabel('$E[\\mathrm{GeV}]$', fontsize = 16, loc = "right")
-        ax.set_title('$\\mathrm{%s}$' % self.dictio_of_dictios[key]["Label"],fontsize = 20)
-        plt.savefig('data/'+key, dpi = 500)
+        ax.set_title('$\\mathrm{%s}$' % self.measurement.exp_data[key]["Label"],fontsize = 20)
+        return x
 
+    #NOTE: Could also be an if-statement in simple Plot
+    def plot_exp(self, key, div_bin = False, box_opt = False):
+        Plot.simple_plot(self, key, div_bin, box_opt)
+        plt.savefig('data/'+key, dpi = 500)
+        return
+
+    def check_pred(self, key, mid, end, div_bin = False, box_opt = False):
+        x = Plot.simple_plot(self, key, div_bin, box_opt)
+        test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
+        test_norm = 1.6#4.925 #FIXME: Correct normalization? Not working for lambda with c_n arrays smaller than the data in the files
+
+        h = Meas()
+        y = h.BsgPrediction(key,mid,end, test_fit_results, test_norm)
+        plt.errorbar(x,y, fmt= 'r.', markersize = 5)
+        plt.savefig('test_'+key)
+         
+
+
+
+h = Plot()
+h.check_pred('babar_hadtag','NNLLNNLO', '055', box_opt= True)
+h.check_pred('babar_sem','NNLLNNLO', '055', box_opt= True)
+h.check_pred('babar_incl','NNLLNNLO', '055', box_opt= True)
+
+'''
 h1 = Plot()
 h2 = Plot()
 h3 = Plot()
 h4 = Plot()
-h1.simple_plot('Babar_hadtag', box_opt= True)
-h2.simple_plot('Belle', box_opt=True)
-h3.simple_plot('Babar_sem', box_opt= True)
-h4.simple_plot('Babar_incl', box_opt= True)
+h1.plot_exp('babar_hadtag', box_opt= True)
+h2.plot_exp('belle', box_opt=True)
+h3.plot_exp('babar_sem', box_opt= True)
+h4.plot_exp('babar_incl', box_opt= True)
+'''
