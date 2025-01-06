@@ -13,10 +13,7 @@ class Plot:
         self.measurement = Meas()
         return
         
-    def simple_plot(self, key, div_bin = False, box_opt = False):
-
-        self.measurement.exp_data
-        fig, ax = plt.subplots()
+    def simple_plot(self, key, fig, ax, div_bin = False, box_opt = False):
 
         x = np.zeros(np.size(self.measurement.exp_data[key]['dBFs']))
         dx = np.zeros(np.size(self.measurement.exp_data[key]['dBFs']))
@@ -30,8 +27,8 @@ class Plot:
             y = self.measurement.exp_data[key]['dBFs']
             dy = self.measurement.exp_data[key]['dBFErrors']
         else:
-            y = self.measurement.exp_data[key]['dBFs']/dx
-            dy = self.measurement.exp_data[key]['dBFErrors']/dx
+            y = self.measurement.exp_data[key]['dBFs']/(2*dx)
+            dy = self.measurement.exp_data[key]['dBFErrors']/(2*dx)
 
         #Set Box options
         if (box_opt):
@@ -42,47 +39,94 @@ class Plot:
             ax.text(0.8,0.95,textstr,fontsize=12,color="black",bbox=dict(facecolor="white", alpha=1, edgecolor="black"), transform = ax.transAxes)
         
         if key == 'Belle':
-            ax.errorbar(x, y*10**(-3), dy*10**(-3),dx,fmt = 'k.', markersize = 5)
+            ax.errorbar(x, y*10**(-3), dy*10**(-3),dx,fmt = 'k.', markersize = 5, label = '$\\mathrm{Exp. Data}$')
             ax.set_ylabel('$\\mathrm{Events} \\: [10^{3}  / 50 \\mathrm{MeV}]$', fontsize = 16)
         else:
-            ax.errorbar(x, y,dy,dx, fmt = 'k.', markersize = 5)
+            ax.errorbar(x, y,dy,dx, fmt = 'k.', markersize = 5, label = '$\\mathrm{Exp. Data}$')
             ax.set_ylabel('$\\Delta B \\left( B \\rightarrow X_S \\gamma \\right) \\: [10^{-4}  / 0.1 \\mathrm{GeV}]$', fontsize = 16)
               
         ax.set_xlabel('$E[\\mathrm{GeV}]$', fontsize = 16, loc = "right")
         ax.set_title('$\\mathrm{%s}$' % self.measurement.exp_data[key]["Label"],fontsize = 20)
-        return x
+        return x,dx
 
-    #NOTE: Could also be an if-statement in simple Plot
-    def plot_exp(self, key, div_bin = False, box_opt = False):
-        Plot.simple_plot(self, key, div_bin, box_opt)
-        plt.savefig('data/'+key, dpi = 500)
-        return
 
-    def check_pred(self, key, mid, end, div_bin = False, box_opt = False):
-        x = Plot.simple_plot(self, key, div_bin, box_opt)
+    def plot_histogram(self, bin_edges, values, fig, ax, title = '', xLabel = '', yLabel = '',div_bin = False, box_opt = False):
+
+        #Option to divide the values by the width of the bin
+        if(div_bin == True):
+            for i in range(np.size(values)):
+                values[i] = values[i]/(bin_edges[i+1]-bin_edges[i])
+
+        plt.step(
+        bin_edges,          
+        [*values, 0],       # Values + additional 0 to close histogram
+        where="post",       # Linienverlauf nach rechts
+        color="hotpink",       
+        lw=1,
+        label = '$\\mathrm{Fit Data}$'                
+        )
+
+        
+        if (box_opt):
+            textstr = '\n'.join((
+                '$\\mathrm{Entries:} \\: %d$' % (np.size(values),),
+                '$\\mathrm{Mean:} \\: %0.3f$' % (bin_edges.mean(),), #FIXME: Mean is incorrect compared to root data
+                '$\\mathrm{Std Dev:} \\: %0.4f$' % (bin_edges.std(),)))
+            ax.text(0.8,0.95,textstr,fontsize=12,color="black",bbox=dict(facecolor="white", alpha=1, edgecolor="black"), transform = ax.transAxes)
+        
+        
+        ax.set_xlabel('$\\mathrm{%s}$' % xLabel, fontsize = 16)
+        ax.set_ylabel('$\\mathrm{%s}$' % yLabel, fontsize = 16)
+        ax.set_title('$\\mathrm{%s}$' % title, fontsize = 20)
+        plt.axis([bin_edges[0], bin_edges[-1], None, None])
+        plt.grid(axis="y", linestyle="--", alpha=0.6)
+
+        return 
+    
+    #TODO: Add labels
+    def check_pred(self, key, mid, end, fig, ax, div_bin = False, box_opt = False):
+        
+        x,dx = Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
+        
         test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
         test_norm = 1.6#4.925 #FIXME: Correct normalization? Not working for lambda with c_n arrays smaller than the data in the files
 
-        h = Meas()
-        y = h.BsgPrediction(key,mid,end, test_fit_results, test_norm)
-        plt.errorbar(x,y, fmt= 'r.', markersize = 5)
-        plt.savefig('test_'+key)
+        #TODO: Do I just add the subleading Prediction?
+        y = h.measurement.BsgPrediction(key,mid,end, test_fit_results, test_norm) + h.measurement.BsgSubLeadingPrediction(key, mid, end, test_fit_results, test_norm)
+
+        if div_bin == True:
+            plt.errorbar(x,y/(2*dx),fmt='.r', label = '$\\mathrm{Pred. Data}$')
+        else:
+            plt.errorbar(x,y, fmt = '.r', label = '$\\mathrm{Pred. Data}$')
+        return
+    
+
+    '''
+    There are 3 Options:
+    1: Plots the experimental data
+    2: Plots a histogram from fitted root data
+    3: Plots 1 and 2 in one Plot and the calculated prediction function in one plot
+    '''
+    def plot_exp(self, key, div_bin = False, box_opt = False, plt_opt = 1 ):
+        fig, ax = plt.subplots()
+        if plt_opt == 1:
+            Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
+            plt.savefig('data/'+key, dpi = 500)
+        elif plt_opt == 2:
+            print(self.measurement.hist_nom[key]['Bins'])
+            Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, ax,self.measurement.hist_nom[key]['Label'])
+            plt.savefig('histogram/'+key+'_nomfit_hist')
+        elif plt_opt == 3: #FIXME: Very specific with check Pred
+            self.check_pred(key, 'NNLLNNLO', '0575', fig,ax, box_opt=False, div_bin= div_bin)
+            Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, ax,self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+            plt.legend()
+            plt.savefig('theory/'+key+'_check_pred')
+
+        return
          
-
-
-
 h = Plot()
-h.check_pred('babar_hadtag','NNLLNNLO', '055', box_opt= True)
-h.check_pred('babar_sem','NNLLNNLO', '055', box_opt= True)
-h.check_pred('babar_incl','NNLLNNLO', '055', box_opt= True)
 
-'''
-h1 = Plot()
-h2 = Plot()
-h3 = Plot()
-h4 = Plot()
-h1.plot_exp('babar_hadtag', box_opt= True)
-h2.plot_exp('belle', box_opt=True)
-h3.plot_exp('babar_sem', box_opt= True)
-h4.plot_exp('babar_incl', box_opt= True)
-'''
+data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
+
+for i in range(4):
+    h.plot_exp(data_tag_list[i],div_bin=True, plt_opt= 1)
