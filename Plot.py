@@ -61,7 +61,7 @@ class Plot:
         bin_edges,          
         [*values, 0],       # Values + additional 0 to close histogram
         where="post",       # Linienverlauf nach rechts
-        color="hotpink",       
+        color="darkgreen",       
         lw=1,
         label = '$\\mathrm{Fit Data}$'                
         )
@@ -83,7 +83,6 @@ class Plot:
 
         return 
     
-    #TODO: Add labels
     def check_pred(self, key, mid, end, fig, ax, div_bin = False, box_opt = False):
         
         x,dx = Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
@@ -91,8 +90,9 @@ class Plot:
         test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
         test_norm = 1.6#4.925 #FIXME: Correct normalization? Not working for lambda with c_n arrays smaller than the data in the files
 
-        #TODO: Do I just add the subleading Prediction?
         y = h.measurement.BsgPrediction(key,mid,end, test_fit_results, test_norm) + h.measurement.BsgSubLeadingPrediction(key, mid, end, test_fit_results, test_norm)
+
+        y = np.matmul(self.measurement.exp_data[key]['Smear'],y)
 
         if div_bin == True:
             plt.errorbar(x,y/(2*dx),fmt='.r', label = '$\\mathrm{Pred. Data}$')
@@ -101,24 +101,25 @@ class Plot:
         return
     
 
-    '''
-    There are 3 Options:
-    1: Plots the experimental data
-    2: Plots a histogram from fitted root data
-    3: Plots 1 and 2 in one Plot and the calculated prediction function in one plot
-    '''
+    #
+    #There are 3 Options:
+    #1: Plots the experimental data
+    #2: Plots a histogram from fitted root data
+    #3: Plots 1 and 2 in one Plot and the calculated prediction function in one plot
+    #
     def plot_exp(self, key, div_bin = False, box_opt = False, plt_opt = 1 ):
         fig, ax = plt.subplots()
         if plt_opt == 1:
             Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
             plt.savefig('data/'+key, dpi = 500)
         elif plt_opt == 2:
-            print(self.measurement.hist_nom[key]['Bins'])
             Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, ax,self.measurement.hist_nom[key]['Label'])
             plt.savefig('histogram/'+key+'_nomfit_hist')
         elif plt_opt == 3: #FIXME: Very specific with check Pred
             self.check_pred(key, 'NNLLNNLO', '0575', fig,ax, box_opt=False, div_bin= div_bin)
-            Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, ax,self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+            print(key)
+            print(np.size(self.measurement.hist_nom[key]['Values']))
+            Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, ax, self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
             plt.legend()
             plt.savefig('theory/'+key+'_check_pred')
 
@@ -129,4 +130,6 @@ h = Plot()
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
 for i in range(4):
-    h.plot_exp(data_tag_list[i],div_bin=True, plt_opt= 1)
+    h.plot_exp(data_tag_list[i],div_bin=True, box_opt=True, plt_opt= 2)
+
+#FIXME: Binned root histogram data has less bins than the experimental and prediction data, so I can't multiply it with the Smear-Matrix

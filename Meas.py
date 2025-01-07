@@ -2,6 +2,7 @@ import numpy as np
 import pickle
 import pandas as pd
 from Tools import Tools
+import traceback
 
 
 class Meas:
@@ -11,14 +12,8 @@ class Meas:
         self.theory_expx3 = Tools.pickle_to_dict('theory/theory_dictionary_expx3')
         self.theory_SSF = Tools.pickle_to_dict('theory/theory_dictionary_expx3')
 
-        #Experimental Dictionary
-        #TODO put it in one file to open
-        self.exp_data = {
-            "babar_incl": Tools.pickle_to_dict("data/babar_incl"),
-            "babar_hadtag": Tools.pickle_to_dict("data/babar_hadtag"),
-            "babar_sem": Tools.pickle_to_dict("data/babar_sem"),
-            "belle": Tools.pickle_to_dict("data/belle")
-            }
+        #Dictionary with experimental data
+        self.exp_data = Tools.pickle_to_dict('data/exp_data')
         
         #Histogram Dictionary from Root Data
         self.hist_nom = Tools.pickle_to_dict("theory/hist_nom")
@@ -50,20 +45,28 @@ class Meas:
 
         return pred
     
-    def SubLeadPars(self, key, end):
+    def SubLeadPars_read(self, key, end):
         return self.theory_SSF[key]['SSF27'][end]['Values']
-
-
-
     
+    # dds Zoltan's SF into the prediction
+    # converts c_n's into subleading coefficients 
+    def SubLeadPars(c_n_params, d2, la, opt):
+        
+        #TODO: Find the real values and how/when to read them in
+        Rho2 = 0
+        mB = 5.279
+        mb = 1
+        Lambda2 = 0.105 #Found in lam2rho2_lain.pdf in GeV^2
 
-#h = Meas()   
-    
+        if(opt == 1):
+            x = (0.6514810199386504 * (mB - mb) - 0.8686413599182005 * la + 0.3257405099693252 * Rho2 / Lambda2) / (1.8531015678254943 * la - d2 * la)
+        elif(opt == 2):
+            x = (0.4722982832332954 * (mB - mb) - 0.5667579398799545 * la + 0.2361491416166477 * Rho2 / Lambda2) / (1.3695121740357048 * la - d2 * la)
+        else:
+            print('Unknown subleading shape function -- please specify Meas.SubLeadPars()')
 
-#print(h.exp_data['belle']['Smear'])
-
-#test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
-#test_norm = 4.925
+        #calculating d0, d1 and d2 and returning them in a numpy array
+        return np.array([1.-x, x* (1-d2), x*d2])
 
 
 

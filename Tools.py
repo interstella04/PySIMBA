@@ -1,8 +1,6 @@
 import pickle
 
-
 class Tools:
-# These two following functions are tools
     def store_in_pickle(dictionary, tag):
         with open(tag+".pkl", "wb") as file:
             pickle.dump(dictionary,file)
