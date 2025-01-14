@@ -133,3 +133,5 @@ for i in range(4):
     h.plot_exp(data_tag_list[i],div_bin=True, box_opt=True, plt_opt= 2)
 
 #FIXME: Binned root histogram data has less bins than the experimental and prediction data, so I can't multiply it with the Smear-Matrix
+
+#TODO: fit.config helpful info for smear matrix and amount of data which is fitted

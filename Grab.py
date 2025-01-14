@@ -169,9 +169,64 @@ class Grab:
         hist_dict['Values'] = file['fit'].values()
         return hist_dict
 
+    def GrabMoments():
+    
+        Fmn_moments = {
+            'expx3'  :dict,
+            'expx4'  :dict,
+            'gaussx3':dict
+        }
+        names = ['expx3','expx4','gaussx3']
+
+        for name in names:
+            count = 0
+            curr_block = []
+            values = []
+            bins = []
+            start_line = 8
+            if (name == 'gaussx3'): start_line = 9
+            strip_string = '# moment ='
+            if (name == 'expx3'): strip_string = '# bin ='
+
+            file =  open ('../simba/Cpp/share/simba/theory/Fmn_moments_'+name+'.txt', 'r')
+            for i, line in enumerate(file):
+                if i < start_line:  # jumps to start line, where the data begins
+                    continue
+                line = line.strip()  # removes useless lines
+                if line.startswith("%s" % strip_string) :  # skips line starting with # moment or # bin depending on the file
+                    line.strip()
+                    bins.append(count)
+                    count+=1
+                    continue
+                if line == "":
+                    if curr_block:  # if current block not empty
+                        values.append(np.array(curr_block, dtype=float))
+                        curr_block = []
+                else:
+                    # extract numbers out of line and put them into an array
+                    curr_block.append(list(map(float, line.split())))
+
+            if curr_block:
+                values.append(np.array(curr_block, dtype=float))
+
+            mom = {
+                'Values': values,
+                'Moment': bins
+            }
+            Fmn_moments[name] = mom
+
+            file.close()
+        
+        return Fmn_moments
+            
+
 
 
 g = Grab()
+
+Fmn_moments = Grab.GrabMoments()
+#print(Fmn_moments['expx4']['Values'][3]) #FIXME: zu wenig Nachkommastellen
+Tools.store_in_pickle(Fmn_moments, 'theory/Fmn_moments')
 
 #Experimental dictionary from 'measurements/%key%.root'
 
@@ -179,7 +234,7 @@ g = Grab()
 data_label_list = ["Babar\\Inclusive\\Spectra", "Babar\\Hadronic\\Tag", "Babar\\Semileptonic", "Belle"]
 
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
-
+'''
 exp_data = {
             "babar_incl": g.GrabMeasurement(data_tag_list[0],data_label_list[0]),
             "babar_hadtag": g.GrabMeasurement(data_tag_list[1],data_label_list[1]),
@@ -188,7 +243,7 @@ exp_data = {
             }
 
 Tools.store_in_pickle(exp_data, 'data/exp_data')
-
+'''
 
 # Theory Dictionary in pickle with all data of '%key%_NNLLNNLO_la%end%.txt' from mb47_mc13_nf3_as207_expx3
 
@@ -201,7 +256,7 @@ theory_dictionary_expx3 = {
 
 Tools.store_in_pickle(theory_dictionary_expx3, 'theory/theory_dictionary_expx3')
 
-print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
+#print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
 
 #Theory Dictionary for SSF27 files (the ones calculated with simba c++ code)
 
@@ -216,10 +271,10 @@ Tools.store_in_pickle(theory_dictionary_SSF27, 'theory/theory_dictionary_SSF27')
 
 # Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
 hist_nom = {
-    "babar_hadtag": g.GrabNomfit('babar_hadtag'),
-    "babar_incl": g.GrabNomfit('babar_incl'),
-    "babar_sem": g.GrabNomfit('babar_sem'),
-    "belle": g.GrabNomfit('belle')
+    "babar_hadtag": Grab.GrabNomfit(data_tag_list[0],data_label_list[0]),
+    "babar_incl": Grab.GrabNomfit(data_tag_list[1],data_label_list[1]),
+    "babar_sem": Grab.GrabNomfit(data_tag_list[2],data_label_list[2]),
+    "belle": Grab.GrabNomfit(data_tag_list[3],data_label_list[3])
     }
 
 Tools.store_in_pickle(hist_nom, 'histogram/hist_nom')
