@@ -11,9 +11,10 @@ class settings:
     cn: list
     SubLeadCoefficients: list # What is it?
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
-    SubLeadTheoryOrder: list # What is it? 
-    FitVars: list #List of Strings according to c++ code
+    SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
+    FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
     KeyOrder = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
+    BasisExpansion = '0575'
 
     DOMomentConstraints: bool #Should the Constraints be in the calculation or not
     
@@ -57,8 +58,7 @@ class Meas:
         self.la: float
 
         return
-    
-    #TODO: FIX SubLeadPars with options
+
     def BsgPrediction_full(self, key: str, end: str, c_n_params, norm):
 
         pred = np.array([])
@@ -68,7 +68,7 @@ class Meas:
             pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
         
         for order in range(np.size(settings.SubLeadTheoryOrder)):
-            pred += self.BsgSubLeadingPrediction(key, settings.SubLeadTheoryOrder[order], end, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order], opt=1 ), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+            pred += self.BsgSubLeadingPrediction(key, settings.SubLeadTheoryOrder[order], end, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
@@ -104,7 +104,6 @@ class Meas:
 
 
     # Returns a prediction array for one specific experiment with one specific lambda
-    #TODO: mid is specific for Prediction?
     def BsgPrediction(self, key:str, mid:str, end:str, c_n_params, norm):      
         pred = np.array([])
         for i in range(np.size(self.exp_data[key]['dBFs'])):
@@ -117,7 +116,7 @@ class Meas:
         return pred 
 
 
-    #TODO: Mid always the same with subleading and so leading? --> Nope, it's probaply the ssf27 thingy
+    # mid is here the SSF27 Files --> SubLeadingTheoryOrder, called in BsgPrediction_full()
     def BsgSubLeadingPrediction(self, key:str, mid:str, end:str, c_n_params, norm):
         pred = np.array([])
         for i in range(np.size(self.exp_data[key]['dBFs'])):
@@ -132,11 +131,11 @@ class Meas:
     def SubLeadPars_read(self, key:str, end:str): #TODO: eigentlich Quatsch diese Funktion
         return self.theory_SSF[key]['SSF27'][end]['Values']
     
-    # dds Zoltan's SF into the prediction
+    # puts Zoltan's SF into the prediction
     # converts c_n's into subleading coefficients
 
     #TODO: c_n_params not used, also in c++ code?
-    def SubLeadPars(self, c_n_params, d2: float, opt:int):
+    def SubLeadPars(self, c_n_params, d2: float):
         
         #TODO: Find the real values and how/when/where to read them in EDIT: Found them in fit.config, are they correct? Is there another file
         Rho2 = -0.05
@@ -146,9 +145,9 @@ class Meas:
         Lambda2 = 0.12 
 
 
-        if(opt == 1):
+        if('SSF27_1' in settings.SubLeadTheoryOrder):
             x = (0.6514810199386504 * (mB - mb) - 0.8686413599182005 * la + 0.3257405099693252 * Rho2 / Lambda2) / (1.8531015678254943 * la - d2 * la)
-        elif(opt == 2):
+        elif('SSF27_2' in settings.SubLeadTheoryOrder):
             x = (0.4722982832332954 * (mB - mb) - 0.5667579398799545 * la + 0.2361491416166477 * Rho2 / Lambda2) / (1.3695121740357048 * la - d2 * la)
         else:
             print('Unknown subleading shape function -- please specify Meas.SubLeadPars()')
@@ -249,6 +248,7 @@ class Meas:
         self.M3 = self.Moment(cn,3)
         self.la = end # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
+
         
 
 
@@ -260,15 +260,3 @@ class Meas:
 #print(h.BsgPrediction('babar_hadtag','NNLLNNLO', '055', test_fit_results, test_norm))
 
 #print(h.theory_expx3['babar_hadtag']['NNLLNNLO']['la'+'055']['Values'][0][0][0]) #NOTE: ...[#bin][line][column]
-
-
-#Schlachtplan
-# Read in moment files EDIT: DONE, BUT TO LESS NUMBERS 
-# Make Moment function EDIT: DONE, BUT NOT TESTED
-# Make mb1SPrediction EDIT: DONE, BUT NOT TESTED
-# Make lambda11Prediction EDIT: DONE, BUT NOT TESTED
-# Finish SubLeadPars EDIT: DONE, BUT NOT TESTED
-# Implement TheoryPrefactor EDIT: DONE, BUT NOT TESTED AND VALUE OF mb MUST STILL BE CALCULATED BEFOREHAND 
-# _mb must be a changable variable in BsgPrediction
-# Find out what FindIndex does, and which data it uses
-# Implement large BsgPrediction function 
