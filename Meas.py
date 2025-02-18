@@ -9,8 +9,13 @@ from dataclasses import dataclass
 class settings:
     la: list
     cn: list
-    SubLeadCoefficients: list
-    TheoryOrder: list
+    SubLeadCoefficients: list # What is it?
+    TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
+    SubLeadTheoryOrder: list # What is it? 
+    FitVars: list #List of Strings according to c++ code
+    KeyOrder = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
+
+    DOMomentConstraints: bool #Should the Constraints be in the calculation or not
     
     # Constants from fit.config
     rho2: float = -0.05
@@ -33,6 +38,9 @@ class Meas:
 
         #Dictionary with experimental data
         self.exp_data = Tools.pickle_to_dict('data/exp_data')
+
+        #Dictionary with fit Configurations specific on dataset
+        self.fit_config = Tools.pickle_to_dict('fit/fit_config')
         
         #Histogram Dictionary from Root Data
         self.hist_nom = Tools.pickle_to_dict("theory/hist_nom")
@@ -40,9 +48,32 @@ class Meas:
         #Moments Dictionary
         self.Fmn_moments = Tools.pickle_to_dict("theory/Fmn_moments")
 
-        self.mb
+        # Variables that will get a value in the process
+        self.chisq: float
+        self.mb: float 
+        self.M1: float
+        self.M2: float
+        self.M3: float
+        self.la: float
 
         return
+    
+    #TODO: FIX SubLeadPars with options
+    def BsgPrediction_full(self, key: str, end: str, c_n_params, norm):
+
+        pred = np.array([])
+        self.mb = self.mb1SPrediction(c_n_params) #HERE mb should change values in the object
+
+        for order in range(np.size(settings.TheoryOrder)):
+            pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
+        
+        for order in range(np.size(settings.SubLeadTheoryOrder)):
+            pred += self.BsgSubLeadingPrediction(key, settings.SubLeadTheoryOrder[order], end, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order], opt=1 ), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+
+        pred = np.matmul(self.exp_data[key]['Smear'],pred) 
+
+        return pred
+        
     
     # Prefactor for leading and subleading theory
     def TheoryPrefactor(self, TheoryOrder:str, norm:float):
@@ -72,7 +103,6 @@ class Meas:
         return value
 
 
-
     # Returns a prediction array for one specific experiment with one specific lambda
     #TODO: mid is specific for Prediction?
     def BsgPrediction(self, key:str, mid:str, end:str, c_n_params, norm):      
@@ -87,14 +117,14 @@ class Meas:
         return pred 
 
 
-    #TODO: Mid always the same with subleading and so leading?
+    #TODO: Mid always the same with subleading and so leading? --> Nope, it's probaply the ssf27 thingy
     def BsgSubLeadingPrediction(self, key:str, mid:str, end:str, c_n_params, norm):
         pred = np.array([])
         for i in range(np.size(self.exp_data[key]['dBFs'])):
             value = 0
             for j in range(np.size(c_n_params)):
-                value +=  self.theory_expx3[key][mid]['la'+end]['Values'][i][0][j] * c_n_params[j]
-                value *= 1/(self.theory_expx3[key][mid]['la'+end]['lambda']*norm)
+                value +=  self.theory_SSF[key][mid]['la'+end]['Values'][i][0][j] * c_n_params[j]
+                value *= 1/(self.theory_SSF[key][mid]['la'+end]['lambda']*norm)
             pred = np.append(pred, value)
 
         return pred
@@ -133,7 +163,7 @@ class Meas:
         value = 0
         for i in range(np.size(c_n_params)):
             for j in range(np.size(c_n_params)):
-                value += self.Fmn_moments['expx3']['Moment'][order][i][j] * c_n_params[i] * c_n_params[j] #TODO: Dont know if indices are correct
+                value += self.Fmn_moments['expx3']['Values'][order][i][j] * c_n_params[i] * c_n_params[j] #TODO: Dont know if indices are correct
         return value
     
     # Calculate mb^1S for a given set of cn's
@@ -164,9 +194,66 @@ class Meas:
         lambda1 = 3. * lambda2 + 2. * mb * (mB - M1 - mb)
 
         return lambda1
-
-
     
+    #converts an's into cn's
+    def ConvertPars(pars):
+        length = np.size(pars)-1
+        if(length < 0):
+            length = np.size(settings.FitVars)-1
+        cn = np.array([])
+        annorm = 1.0
+        for i in range(length):
+            annorm += pars[i+1]**2
+        np.append(cn, 1/np.sqrt(annorm))
+        for i in range(length):
+            np.append(cn, pars[i+1]/np.sqrt(annorm))
+
+        return cn
+
+    #The given parameters pars are probaply the an's which should be converted into cn's
+    def Chisq(self, pars, end):
+        cn = Meas.ConvertPars(pars)
+        norm = pars[0]
+
+        pred_glob = np.array([])
+        meas_glob = np.array([])
+        Cov_glob = np.eye(5) # FIXME
+
+        ntot = 0
+
+        for key in settings.KeyOrder:
+
+            nbins = np.size(self.exp_data[key]['dBFs'])
+            min = self.fit_config[key][min]
+            max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
+
+            full_pred = Meas.BsgPrediction_full(self,key, end, pars, norm) # My BsgPrediction Function is for one data set
+            pred =  full_pred[min:max+1]
+            meas = self.exp_data[key]['dBFs'][min:max+1]
+            Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
+
+            pred_glob = np.append(pred_glob, pred)
+            meas_glob = np.append(meas_glob, meas)
+            Cov_glob = Tools.set_sub(Cov_glob, ntot, ntot, Cov) # FIXME: ????????????? What should the matrix look like, this will only work if I have a big enough Cov_glob defined in the beginning
+            ntot += (max+1)-min
+        
+        Cov_glob = np.linalg.inv(Cov_glob)
+
+        #Calculate Chi^2
+        Chisq = np.dot(meas_glob-pred_glob, np.matmul(Cov_glob, meas_glob-pred_glob))
+
+        self.chisq = Chisq
+        self.mb = self.mb1SPrediction(cn)
+        self.M1 = self.Moment(cn,1)
+        self.M2 = self.Moment(cn,2)
+        self.M3 = self.Moment(cn,3)
+        self.la = end # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
+        return Chisq
+        
+
+
+
+
 
 #print(Meas.SubLeadPars('babar_hadtag', '105')['Values'][0])
 
@@ -181,7 +268,7 @@ class Meas:
 # Make mb1SPrediction EDIT: DONE, BUT NOT TESTED
 # Make lambda11Prediction EDIT: DONE, BUT NOT TESTED
 # Finish SubLeadPars EDIT: DONE, BUT NOT TESTED
-# Implement TheoryPrefactor
+# Implement TheoryPrefactor EDIT: DONE, BUT NOT TESTED AND VALUE OF mb MUST STILL BE CALCULATED BEFOREHAND 
 # _mb must be a changable variable in BsgPrediction
 # Find out what FindIndex does, and which data it uses
 # Implement large BsgPrediction function 

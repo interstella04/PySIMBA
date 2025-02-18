@@ -218,6 +218,13 @@ class Grab:
             file.close()
         
         return Fmn_moments
+    
+
+    def create_fit_config(min = 0):
+        dictio = {
+            'min': min,
+                  }
+        return dictio
             
 
 
@@ -272,9 +279,18 @@ Tools.store_in_pickle(theory_dictionary_SSF27, 'theory/theory_dictionary_SSF27')
 # Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
 hist_nom = {
     "babar_hadtag": Grab.GrabNomfit(data_tag_list[0],data_label_list[0]),
-    "babar_incl": Grab.GrabNomfit(data_tag_list[1],data_label_list[1]),
-    "babar_sem": Grab.GrabNomfit(data_tag_list[2],data_label_list[2]),
-    "belle": Grab.GrabNomfit(data_tag_list[3],data_label_list[3])
+    "babar_incl":   Grab.GrabNomfit(data_tag_list[1],data_label_list[1]),
+    "babar_sem":    Grab.GrabNomfit(data_tag_list[2],data_label_list[2]),
+    "belle":        Grab.GrabNomfit(data_tag_list[3],data_label_list[3])
     }
 
 Tools.store_in_pickle(hist_nom, 'histogram/hist_nom')
+
+fit_config = {
+    "babar_hadtag": Grab.create_fit_config(),
+    "babar_incl":   Grab.create_fit_config(3),
+    "babar_sem":    Grab.create_fit_config(),
+    "belle":        Grab.create_fit_config(6)
+    }
+
+Tools.store_in_pickle(fit_config, 'fit/fit_config')
