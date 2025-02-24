@@ -91,7 +91,7 @@ class Plot:
         #test_fit_results = np.array([52.28810, 76.08732, 21.63939, 7.2753347, 0.167108, -0.107294])
         test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
         #test_norm = 2.30854 #FIXME: Correct normalization? Not working for lambda with c_n arrays smaller than the data in the files
-        test_norm = 4.925 
+        test_norm = 1.6 #4.925 
 
         y = self.measurement.BsgPrediction_full(key,end, test_fit_results, test_norm) + self.measurement.BsgSubLeadingPrediction(key, test_fit_results, test_norm)
 
@@ -119,7 +119,7 @@ class Plot:
             Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, ax,self.measurement.hist_nom[key]['Label'])
             plt.savefig('histogram/'+key+'_nomfit_hist')
         elif plt_opt == 3: #FIXME: Very specific with check Pred
-            self.check_pred(key, '055', fig,ax, box_opt=False, div_bin= div_bin)
+            self.check_pred(key, '0575', fig,ax, box_opt=False, div_bin= div_bin)
             Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, ax, self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
             plt.legend()
             plt.savefig('theory/'+key+'_check_pred')
