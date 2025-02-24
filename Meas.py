@@ -4,17 +4,19 @@ import pandas as pd
 from Tools import Tools
 import traceback
 from dataclasses import dataclass
+from iminuit import Minuit, cost
 
 @dataclass
 class settings:
     la: list
     cn: list
-    SubLeadCoefficients: list # What is it?
+    SubLeadCoefficients = [0.] # Don't really know, because in fit.config it is only SSF27_1055 and SSF27_2055 both are zero for d2
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
     SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
     FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
     KeyOrder = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
     BasisExpansion = '0575'
+    SubLeadBasisExpansion = '10575' # ATTENTION, is in SubLeadingPred used
 
     DOMomentConstraints: bool #Should the Constraints be in the calculation or not
     
@@ -35,7 +37,7 @@ class Meas:
 
         #Theory Dictionaries
         self.theory_expx3 = Tools.pickle_to_dict('theory/theory_dictionary_expx3')
-        self.theory_SSF = Tools.pickle_to_dict('theory/theory_dictionary_expx3')
+        self.theory_SSF = Tools.pickle_to_dict('theory/theory_dictionary_SSF27')
 
         #Dictionary with experimental data
         self.exp_data = Tools.pickle_to_dict('data/exp_data')
@@ -61,14 +63,14 @@ class Meas:
 
     def BsgPrediction_full(self, key: str, end: str, c_n_params, norm):
 
-        pred = np.array([])
+        pred = np.zeros(np.size(self.exp_data[key]['dBFs']))
         self.mb = self.mb1SPrediction(c_n_params) #HERE mb should change values in the object
 
         for order in range(np.size(settings.TheoryOrder)):
-            pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
+            pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
         
         for order in range(np.size(settings.SubLeadTheoryOrder)):
-            pred += self.BsgSubLeadingPrediction(key, settings.SubLeadTheoryOrder[order], end, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+            pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
@@ -83,18 +85,18 @@ class Meas:
         if ('22' in TheoryOrder):
             value *= settings.C2C2
             value /= norm
-            value *= np.pow(settings.VtbVts * self.mb, 2.0)
+            value *= np.power(settings.VtbVts * self.mb, 2.0)
         elif ('SSF27' in TheoryOrder):
             value *= settings.C2C7 / np.sqrt(norm) * settings.VtbVts * self.mb
             value *= settings.La2 / self.mb
         elif ('27' in TheoryOrder):
             value *= settings.C2C7 / np.sqrt(norm) * settings.VtbVts * self.mb
         elif ('28' in TheoryOrder):
-            value *= settings.C2C8 / norm * np.pow(settings.VtbVts * self.mb, 2.0)
+            value *= settings.C2C8 / norm * np.power(settings.VtbVts * self.mb, 2.0)
         elif ('88' in TheoryOrder):
             value *= settings.C8C8
             value /= norm
-            value *= np.pow(settings.VtbVts * self.mb, 2.0)
+            value *= np.power(settings.VtbVts * self.mb, 2.0)
         elif ('78'  in TheoryOrder):
             value *= settings.C8C7
             value /= np.sqrt(norm)
@@ -117,13 +119,17 @@ class Meas:
 
 
     # mid is here the SSF27 Files --> SubLeadingTheoryOrder, called in BsgPrediction_full()
-    def BsgSubLeadingPrediction(self, key:str, mid:str, end:str, c_n_params, norm):
+    def BsgSubLeadingPrediction(self, key:str, c_n_params, norm):
         pred = np.array([])
         for i in range(np.size(self.exp_data[key]['dBFs'])):
             value = 0
             for j in range(np.size(c_n_params)):
-                value +=  self.theory_SSF[key][mid]['la'+end]['Values'][i][0][j] * c_n_params[j]
-                value *= 1/(self.theory_SSF[key][mid]['la'+end]['lambda']*norm)
+                try:
+                    value +=  self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
+                    value *= 1/(self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['lambda']*norm)
+                except IndexError:
+                    #print('SubLeadingTheory for %s and %s has only %d values per bin, so we just used the first %d Parameters' % (key,settings.SubLeadBasisExpansion,j, j))
+                    break
             pred = np.append(pred, value)
 
         return pred
@@ -178,7 +184,7 @@ class Meas:
 
         p = -18 * Lambda2 - 25 * M1 * M1 + 36 * M2 - 22 * M1 * mB + 11 * mB * mB
         q = 5 * M1 * (27 * Lambda2 + 25 * M1 * M1 - 54 * M2) - 3 * (45 * Lambda2 - 55 * M1 * M1 + 72 * M2) * mB + 51 * M1 * mB * mB - 17 * mB * mB * mB + 162 * (M3 + Rho2)
-        u = np.pow((-q + np.sqrt(q * q + p * p * p)), 1. / 3.)
+        u = np.cbrt((-q + np.sqrt(q * q + p * p * p)))
         mb = 1. / 6. * (5 * (mB - M1) - p / u + u)
 
         return mb
@@ -210,49 +216,61 @@ class Meas:
         return cn
 
     #The given parameters pars are probaply the an's which should be converted into cn's
-    def Chisq(self, pars, end):
+    def Chisq(self, pars):
         cn = Meas.ConvertPars(pars)
         norm = pars[0]
 
         pred_glob = np.array([])
         meas_glob = np.array([])
-        Cov_glob = np.eye(5) # FIXME
+        Cov_glob = np.zeros((52,52)) #FIXME Oddly specific
 
         ntot = 0
 
         for key in settings.KeyOrder:
 
             nbins = np.size(self.exp_data[key]['dBFs'])
-            min = self.fit_config[key][min]
+            min = self.fit_config[key]['min']
             max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
 
-            full_pred = Meas.BsgPrediction_full(self,key, end, pars, norm) # My BsgPrediction Function is for one data set
+            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, pars, norm) # My BsgPrediction Function is for one data set
             pred =  full_pred[min:max+1]
             meas = self.exp_data[key]['dBFs'][min:max+1]
             Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
-
             pred_glob = np.append(pred_glob, pred)
             meas_glob = np.append(meas_glob, meas)
-            Cov_glob = Tools.set_sub(Cov_glob, ntot, ntot, Cov) # FIXME: ????????????? What should the matrix look like, this will only work if I have a big enough Cov_glob defined in the beginning
-            ntot += (max+1)-min
+            Tools.set_sub(Cov_glob, ntot, ntot, Cov)
+            ntot += max-min
         
-        Cov_glob = np.linalg.inv(Cov_glob)
+        Cov_glob = np.linalg.inv(Cov_glob) 
+
 
         #Calculate Chi^2
-        Chisq = np.dot(meas_glob-pred_glob, np.matmul(Cov_glob, meas_glob-pred_glob))
+        Chisq = np.dot(meas_glob-pred_glob, np.matmul(Cov_glob, meas_glob-pred_glob)) # NOTE: Correct like this ?
 
         self.chisq = Chisq
         self.mb = self.mb1SPrediction(cn)
         self.M1 = self.Moment(cn,1)
         self.M2 = self.Moment(cn,2)
         self.M3 = self.Moment(cn,3)
-        self.la = end # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
+        self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
 
-        
+
+'''
+start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
+
+mes = Meas()
+
+m = Minuit(mes.Chisq, start_pars)
+m.migrad()
+m.hesse()
 
 
+with open('results.csv', 'a') as f:
+    #f.write('la;x0;x1;x2;x3;x4;x5;x6\n')
+    f.write('%s;%f;%f;%f;%f;%f;%f;%f\n' % (settings.BasisExpansion,m.values[0],m.values[1],m.values[2],m.values[3],m.values[4],m.values[5],m.values[6]))
 
+'''
 
 
 #print(Meas.SubLeadPars('babar_hadtag', '105')['Values'][0])

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt 
 from Meas import Meas
+from Meas import settings
 from matplotlib import rc
 
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
@@ -39,7 +40,7 @@ class Plot:
             ax.text(0.8,0.95,textstr,fontsize=12,color="black",bbox=dict(facecolor="white", alpha=1, edgecolor="black"), transform = ax.transAxes)
         
         if key == 'Belle':
-            ax.errorbar(x, y*10**(-3), dy*10**(-3),dx,fmt = 'k.', markersize = 5, label = '$\\mathrm{Exp. Data}$')
+            ax.errorbar(x, y, dy,dx,fmt = 'k.', markersize = 5, label = '$\\mathrm{Exp. Data}$')
             ax.set_ylabel('$\\mathrm{Events} \\: [10^{3}  / 50 \\mathrm{MeV}]$', fontsize = 16)
         else:
             ax.errorbar(x, y,dy,dx, fmt = 'k.', markersize = 5, label = '$\\mathrm{Exp. Data}$')
@@ -83,14 +84,16 @@ class Plot:
 
         return 
     
-    def check_pred(self, key, mid, end, fig, ax, div_bin = False, box_opt = False):
+    def check_pred(self, key, end, fig, ax, div_bin = False, box_opt = False):
         
         x,dx = Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
         
+        #test_fit_results = np.array([52.28810, 76.08732, 21.63939, 7.2753347, 0.167108, -0.107294])
         test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
-        test_norm = 1.6#4.925 #FIXME: Correct normalization? Not working for lambda with c_n arrays smaller than the data in the files
+        #test_norm = 2.30854 #FIXME: Correct normalization? Not working for lambda with c_n arrays smaller than the data in the files
+        test_norm = 4.925 
 
-        y = h.measurement.BsgPrediction(key,mid,end, test_fit_results, test_norm) + h.measurement.BsgSubLeadingPrediction(key, mid, end, test_fit_results, test_norm)
+        y = self.measurement.BsgPrediction_full(key,end, test_fit_results, test_norm) + self.measurement.BsgSubLeadingPrediction(key, test_fit_results, test_norm)
 
         y = np.matmul(self.measurement.exp_data[key]['Smear'],y)
 
@@ -116,13 +119,10 @@ class Plot:
             Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, ax,self.measurement.hist_nom[key]['Label'])
             plt.savefig('histogram/'+key+'_nomfit_hist')
         elif plt_opt == 3: #FIXME: Very specific with check Pred
-            self.check_pred(key, 'NNLLNNLO', '0575', fig,ax, box_opt=False, div_bin= div_bin)
-            print(key)
-            print(np.size(self.measurement.hist_nom[key]['Values']))
+            self.check_pred(key, '055', fig,ax, box_opt=False, div_bin= div_bin)
             Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, ax, self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
             plt.legend()
             plt.savefig('theory/'+key+'_check_pred')
-
         return
          
 h = Plot()
@@ -130,7 +130,7 @@ h = Plot()
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
 for i in range(4):
-    h.plot_exp(data_tag_list[i],div_bin=True, box_opt=True, plt_opt= 2)
+    h.plot_exp(data_tag_list[i],div_bin=True, box_opt=True, plt_opt= 3)
 
 #FIXME: Binned root histogram data has less bins than the experimental and prediction data, so I can't multiply it with the Smear-Matrix
 

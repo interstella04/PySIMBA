@@ -144,7 +144,7 @@ class Grab:
                     "Values": values,
                     "Bins": bins
                 }
-
+            
             collected_data['la'+end] = theo_dictio
 
         return collected_data
@@ -230,7 +230,7 @@ class Grab:
 
 
 g = Grab()
-
+'''
 Fmn_moments = Grab.GrabMoments()
 #print(Fmn_moments['expx4']['Values'][3]) #FIXME: zu wenig Nachkommastellen
 Tools.store_in_pickle(Fmn_moments, 'theory/Fmn_moments')
@@ -241,7 +241,7 @@ Tools.store_in_pickle(Fmn_moments, 'theory/Fmn_moments')
 data_label_list = ["Babar\\Inclusive\\Spectra", "Babar\\Hadronic\\Tag", "Babar\\Semileptonic", "Belle"]
 
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
-'''
+
 exp_data = {
             "babar_incl": g.GrabMeasurement(data_tag_list[0],data_label_list[0]),
             "babar_hadtag": g.GrabMeasurement(data_tag_list[1],data_label_list[1]),
@@ -253,7 +253,7 @@ Tools.store_in_pickle(exp_data, 'data/exp_data')
 '''
 
 # Theory Dictionary in pickle with all data of '%key%_NNLLNNLO_la%end%.txt' from mb47_mc13_nf3_as207_expx3
-
+'''
 theory_dictionary_expx3 = {
     "babar_hadtag": g.grab_mids('babar_hadtag'),
     "babar_incl": g.grab_mids('babar_incl'),
@@ -266,7 +266,7 @@ Tools.store_in_pickle(theory_dictionary_expx3, 'theory/theory_dictionary_expx3')
 #print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
 
 #Theory Dictionary for SSF27 files (the ones calculated with simba c++ code)
-
+'''
 theory_dictionary_SSF27 = {
     "babar_hadtag": g.grab_theory('babar_hadtag', 'SSF27'),
     "babar_incl": g.grab_theory('babar_incl', 'SSF27'),
@@ -274,6 +274,8 @@ theory_dictionary_SSF27 = {
     "belle": g.grab_theory('belle', 'SSF27')
     }
 
+print(theory_dictionary_SSF27['babar_hadtag']['la10575'])
+'''
 Tools.store_in_pickle(theory_dictionary_SSF27, 'theory/theory_dictionary_SSF27')
 
 # Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
@@ -294,3 +296,5 @@ fit_config = {
     }
 
 Tools.store_in_pickle(fit_config, 'fit/fit_config')
+
+'''
