@@ -58,7 +58,7 @@ class Plot:
             for i in range(np.size(values)):
                 values[i] = values[i]/(bin_edges[i+1]-bin_edges[i])
 
-        plt.step(
+        ax.step(
         bin_edges,          
         [*values, 0],       # Values + additional 0 to close histogram
         where="post",       # Linienverlauf nach rechts
@@ -84,23 +84,43 @@ class Plot:
 
         return 
     
-    def check_pred(self, key, end, fig, ax, div_bin = False, box_opt = False):
+    def check_pred(self, key, end, fig, ax, div_bin = False, box_opt = False, given_pred = False, full = True,  mid = 'NNLLNNLO', made_up_norm = False):
         
         x,dx = Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
+
+        if given_pred == True:
+            test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
+            #test_fit_results = Meas.ConvertPars(test_fit_results)
+            #print('given pred')
+            #print(test_fit_results)
+            if made_up_norm == True:
+                test_norm = 0.05
+            else:
+                test_norm = 4.925 * 10 ** (-3)
+        else:
+            test_fit_results = np.array([0.970778,-0.141763,-0.288871,0.881055,-0.150553,0.259134,-0.134743])
+            test_fit_results = Meas.ConvertPars(test_fit_results)
+            print('calculated pred')
+            print(test_fit_results)
+            if made_up_norm == True:
+                test_norm = 0.0970778 
+            else:
+                test_norm = test_fit_results[0]
+            
+            test_fit_results = test_fit_results[1:]
+
+
+        if full == True:
+            y = self.measurement.BsgPrediction_full(key,end, test_fit_results, test_norm)
+        else:
+            y = self.measurement.BsgPrediction(key,mid, end, test_fit_results, test_norm) + self.measurement.BsgSubLeadingPrediction(key, test_fit_results, test_norm)
         
-        #test_fit_results = np.array([52.28810, 76.08732, 21.63939, 7.2753347, 0.167108, -0.107294])
-        test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
-        #test_norm = 2.30854 #FIXME: Correct normalization? Not working for lambda with c_n arrays smaller than the data in the files
-        test_norm = 1.6 #4.925 
-
-        y = self.measurement.BsgPrediction_full(key,end, test_fit_results, test_norm) + self.measurement.BsgSubLeadingPrediction(key, test_fit_results, test_norm)
-
         y = np.matmul(self.measurement.exp_data[key]['Smear'],y)
 
         if div_bin == True:
-            plt.errorbar(x,y/(2*dx),fmt='.r', label = '$\\mathrm{Pred. Data}$')
+            ax.errorbar(x,y/(2*dx),fmt='.r', label = '$\\mathrm{Pred. Data}$')
         else:
-            plt.errorbar(x,y, fmt = '.r', label = '$\\mathrm{Pred. Data}$')
+            ax.errorbar(x,y, fmt = '.r', label = '$\\mathrm{Pred. Data}$')
         return
     
 
@@ -119,19 +139,67 @@ class Plot:
             Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, ax,self.measurement.hist_nom[key]['Label'])
             plt.savefig('histogram/'+key+'_nomfit_hist')
         elif plt_opt == 3: #FIXME: Very specific with check Pred
-            self.check_pred(key, '0575', fig,ax, box_opt=False, div_bin= div_bin)
+            self.check_pred(key, settings.BasisExpansion, fig,ax, box_opt=False, div_bin= div_bin)
             Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, ax, self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
             plt.legend()
             plt.savefig('theory/'+key+'_check_pred')
         return
          
+
+    def compare(self, key, div_bin = False, box_opt = False):
+        fig, axs = plt.subplots(4, 3, figsize=(16, 16), sharex=True)
+
+        Plot.simple_plot(self, key, fig, axs[0,0], div_bin, box_opt)
+
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, axs[1,0],self.measurement.hist_nom[key]['Label'])
+
+        # Given cn's
+        self.check_pred(key, settings.BasisExpansion, fig,axs[2,0], box_opt=False, div_bin= div_bin, given_pred= True, full = True)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+        self.check_pred(key, settings.BasisExpansion, fig,axs[2,1], box_opt=False, div_bin= div_bin, given_pred= True, full = False)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+        self.check_pred(key, settings.BasisExpansion, fig,axs[2,2], box_opt=False, div_bin= div_bin, given_pred= True, full = True, made_up_norm= True)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+        #Calculated cn's
+        self.check_pred(key, settings.BasisExpansion, fig,axs[3,0], box_opt=False, div_bin= div_bin, given_pred= False, full = True)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+        self.check_pred(key, settings.BasisExpansion, fig,axs[3,1], box_opt=False, div_bin= div_bin, given_pred= False, full = False)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+        self.check_pred(key, settings.BasisExpansion, fig,axs[3,2], box_opt=False, div_bin= div_bin, given_pred= False, full = True, made_up_norm= True)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+
+        plt.tight_layout()
+
+        for ax in axs:
+            for i in ax:
+                i.set_title("")
+
+        axs[2,0].set_title("Full prediction, Given Norm")
+        axs[2,1].set_title("NNLLNNLO prediction, Given Norm")
+        axs[2,2].set_title("Full prediction, Made up Norm")
+
+        axs[2,0].set_ylabel("Given cn's")
+        axs[3,0].set_ylabel("Calculated cn's")
+
+        fig.suptitle(r""+self.measurement.exp_data[key]['Label'], fontsize=16, fontweight="bold")
+
+        plt.savefig('compare/'+key+'_compare')
+
 h = Plot()
 
+h.compare('babar_hadtag')
+'''
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
-for i in range(4):
-    h.plot_exp(data_tag_list[i],div_bin=True, box_opt=True, plt_opt= 3)
-
+for i in data_tag_list:
+    h.compare(i)
+'''
 #FIXME: Binned root histogram data has less bins than the experimental and prediction data, so I can't multiply it with the Smear-Matrix
 
 #TODO: fit.config helpful info for smear matrix and amount of data which is fitted

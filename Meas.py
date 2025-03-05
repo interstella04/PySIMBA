@@ -113,7 +113,7 @@ class Meas:
             for j in range(np.size(c_n_params)):
                 for k in range(np.size(c_n_params)):
                     value += self.theory_expx3[key][mid]['la'+end]['Values'][i][j][k] * c_n_params[j] * c_n_params[k] 
-                    value *= 1/(self.theory_expx3[key][mid]['la'+end]['lambda']*norm)
+                    value *= norm
             pred = np.append(pred, value)
         return pred 
 
@@ -126,7 +126,7 @@ class Meas:
             for j in range(np.size(c_n_params)):
                 try:
                     value +=  self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
-                    value *= 1/(self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['lambda']*norm)
+                    value *= norm
                 except IndexError:
                     #print('SubLeadingTheory for %s and %s has only %d values per bin, so we just used the first %d Parameters' % (key,settings.SubLeadBasisExpansion,j, j))
                     break
@@ -205,13 +205,13 @@ class Meas:
         length = np.size(pars)-1
         if(length < 0):
             length = np.size(settings.FitVars)-1
-        cn = np.array([])
-        annorm = 1.0
+
+        annorm = 1.0 + np.sum(pars[1:]**2)
+
+        cn = [1.0/np.sqrt(annorm)]
+
         for i in range(length):
-            annorm += pars[i+1]**2
-        np.append(cn, 1/np.sqrt(annorm))
-        for i in range(length):
-            np.append(cn, pars[i+1]/np.sqrt(annorm))
+            cn.append(pars[i+1]/np.sqrt(annorm)) #NOTE: Converts rest
 
         return cn
 
@@ -232,7 +232,7 @@ class Meas:
             min = self.fit_config[key]['min']
             max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
 
-            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, pars, norm) # My BsgPrediction Function is for one data set
+            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm) # My BsgPrediction Function is for one data set
             pred =  full_pred[min:max+1]
             meas = self.exp_data[key]['dBFs'][min:max+1]
             Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
@@ -255,26 +255,3 @@ class Meas:
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
 
-
-'''
-start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
-
-mes = Meas()
-
-m = Minuit(mes.Chisq, start_pars)
-m.migrad()
-m.hesse()
-
-
-with open('results.csv', 'a') as f:
-    #f.write('la;x0;x1;x2;x3;x4;x5;x6\n')
-    f.write('%s;%f;%f;%f;%f;%f;%f;%f\n' % (settings.BasisExpansion,m.values[0],m.values[1],m.values[2],m.values[3],m.values[4],m.values[5],m.values[6]))
-
-'''
-
-
-#print(Meas.SubLeadPars('babar_hadtag', '105')['Values'][0])
-
-#print(h.BsgPrediction('babar_hadtag','NNLLNNLO', '055', test_fit_results, test_norm))
-
-#print(h.theory_expx3['babar_hadtag']['NNLLNNLO']['la'+'055']['Values'][0][0][0]) #NOTE: ...[#bin][line][column]
