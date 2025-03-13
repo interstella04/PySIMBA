@@ -69,8 +69,8 @@ class Meas:
         for order in range(np.size(settings.TheoryOrder)):
             pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
         
-        for order in range(np.size(settings.SubLeadTheoryOrder)):
-            pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+        #for order in range(np.size(settings.SubLeadTheoryOrder)):
+            #pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
@@ -144,11 +144,11 @@ class Meas:
     def SubLeadPars(self, c_n_params, d2: float):
         
         #TODO: Find the real values and how/when/where to read them in EDIT: Found them in fit.config, are they correct? Is there another file
-        Rho2 = -0.05
-        mB = 5.279
+        Rho2 = settings.rho2
+        mB = settings.mB
         mb = self.mb1SPrediction(c_n_params)
         la = self.lambda11SPrediction(c_n_params)
-        Lambda2 = 0.12 
+        Lambda2 = settings.La2
 
 
         if('SSF27_1' in settings.SubLeadTheoryOrder):
@@ -254,4 +254,3 @@ class Meas:
         self.M3 = self.Moment(cn,3)
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
-

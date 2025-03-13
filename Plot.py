@@ -90,24 +90,19 @@ class Plot:
 
         if given_pred == True:
             test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
-            #test_fit_results = Meas.ConvertPars(test_fit_results)
-            #print('given pred')
-            #print(test_fit_results)
             if made_up_norm == True:
                 test_norm = 0.05
             else:
                 test_norm = 4.925 * 10 ** (-3)
         else:
-            test_fit_results = np.array([0.970778,-0.141763,-0.288871,0.881055,-0.150553,0.259134,-0.134743])
+            test_fit_results = np.array([ 0.97077755, -0.14176911, -0.28886564, 0.88106524, -0.15055227, 0.25913442, -0.13474348])
             test_fit_results = Meas.ConvertPars(test_fit_results)
-            print('calculated pred')
-            print(test_fit_results)
+
             if made_up_norm == True:
-                test_norm = 0.0970778 
+                test_norm = 0.4
             else:
-                test_norm = test_fit_results[0]
+                test_norm = 0.97077755
             
-            test_fit_results = test_fit_results[1:]
 
 
         if full == True:
