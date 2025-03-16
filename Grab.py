@@ -236,7 +236,7 @@ Tools.store_in_pickle(Fmn_moments, 'theory/Fmn_moments')
 #Experimental dictionary from 'measurements/%key%.root'
 
 # We can change the titles of the Plots here
-data_label_list = ["Babar \newline InclusiveSpectra", "BabarHadronicTag", "BabarSemileptonic", "Belle"]
+data_label_list = ["BabarInclusiveSpectra", "BabarHadronicTag", "BabarSemileptonic", "Belle"]
 
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
