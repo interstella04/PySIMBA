@@ -14,7 +14,7 @@ class settings:
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
     SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
     FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
-    KeyOrder = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
+    KeyOrder = ["babar_incl", "babar_hadtag"]#, "babar_sem", "belle"]
     BasisExpansion = '0575'
     SubLeadBasisExpansion = '10575' # ATTENTION, is in SubLeadingPred used
 
@@ -221,7 +221,7 @@ class Meas:
 
         pred_glob = np.array([])
         meas_glob = np.array([])
-        Cov_glob = np.zeros((52,52)) #FIXME Oddly specific
+        Cov_glob = np.zeros((17,17)) #FIXME Oddly specific
 
         ntot = 0
 
