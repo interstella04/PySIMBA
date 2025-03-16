@@ -143,12 +143,11 @@ class Meas:
     #TODO: c_n_params not used, also in c++ code?
     def SubLeadPars(self, c_n_params, d2: float):
         
-        #TODO: Find the real values and how/when/where to read them in EDIT: Found them in fit.config, are they correct? Is there another file
-        Rho2 = -0.05
-        mB = 5.279
+        Rho2 = settings.rho2
+        mB = settings.mB
         mb = self.mb1SPrediction(c_n_params)
         la = self.lambda11SPrediction(c_n_params)
-        Lambda2 = 0.12 
+        Lambda2 = settings.La2
 
 
         if('SSF27_1' in settings.SubLeadTheoryOrder):

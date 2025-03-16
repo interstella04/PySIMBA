@@ -187,7 +187,6 @@ class Plot:
 
 h = Plot()
 
-#h.compare('babar_hadtag')
 
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
