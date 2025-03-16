@@ -254,3 +254,15 @@ class Meas:
         self.M3 = self.Moment(cn,3)
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
+
+'''
+start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
+
+mes = Meas()
+
+m = Minuit(mes.Chisq, start_pars)
+m.migrad()
+m.hesse()
+
+print(m.values)'S
+'''
