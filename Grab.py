@@ -1,4 +1,4 @@
-#from ROOT import *
+from ROOT import TFile
 import uproot
 import numpy as np
 import pickle
@@ -18,8 +18,6 @@ class Grab:
         self.mids = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
 
 
-    '''
-    #TODO: Compile again because of the label names
     def GrabMeasurement(Tag, Label):
 
         # Our Measurement Dictionary
@@ -34,7 +32,7 @@ class Grab:
         }
 
         # Open File and grab measurement histogram
-        f = TFile("/home/s08shoff/physik/shk_bernlochner/simba/Cpp/share/simba/measurements/" + Tag + ".root")
+        f = TFile("../simba/Cpp/share/simba/measurements/" + Tag + ".root")
         h = f.Get(Tag)
         # Determine the number of bins
         nbins = h.GetNbinsX()
@@ -70,7 +68,7 @@ class Grab:
 
         return measDict
 
-    '''
+    
 
     #key: Which experiment. possibilities: ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
     #mid: Which Order. possibilities: see self.mids
@@ -230,7 +228,7 @@ class Grab:
 
 
 g = Grab()
-'''
+
 Fmn_moments = Grab.GrabMoments()
 #print(Fmn_moments['expx4']['Values'][3]) #FIXME: zu wenig Nachkommastellen
 Tools.store_in_pickle(Fmn_moments, 'theory/Fmn_moments')
@@ -243,17 +241,17 @@ data_label_list = ["Babar\\Inclusive\\Spectra", "Babar\\Hadronic\\Tag", "Babar\\
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
 exp_data = {
-            "babar_incl": g.GrabMeasurement(data_tag_list[0],data_label_list[0]),
-            "babar_hadtag": g.GrabMeasurement(data_tag_list[1],data_label_list[1]),
-            "babar_sem": g.GrabMeasurement(data_tag_list[2],data_label_list[2]),
-            "belle": g.GrabMeasurement(data_tag_list[3],data_label_list[3])
+            "babar_incl": Grab.GrabMeasurement(data_tag_list[0],data_label_list[0]),
+            "babar_hadtag": Grab.GrabMeasurement(data_tag_list[1],data_label_list[1]),
+            "babar_sem": Grab.GrabMeasurement(data_tag_list[2],data_label_list[2]),
+            "belle": Grab.GrabMeasurement(data_tag_list[3],data_label_list[3])
             }
 
 Tools.store_in_pickle(exp_data, 'data/exp_data')
-'''
+
 
 # Theory Dictionary in pickle with all data of '%key%_NNLLNNLO_la%end%.txt' from mb47_mc13_nf3_as207_expx3
-'''
+
 theory_dictionary_expx3 = {
     "babar_hadtag": g.grab_mids('babar_hadtag'),
     "babar_incl": g.grab_mids('babar_incl'),
@@ -266,7 +264,7 @@ Tools.store_in_pickle(theory_dictionary_expx3, 'theory/theory_dictionary_expx3')
 #print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
 
 #Theory Dictionary for SSF27 files (the ones calculated with simba c++ code)
-'''
+
 theory_dictionary_SSF27 = {
     "babar_hadtag": g.grab_theory('babar_hadtag', 'SSF27'),
     "babar_incl": g.grab_theory('babar_incl', 'SSF27'),
@@ -274,8 +272,8 @@ theory_dictionary_SSF27 = {
     "belle": g.grab_theory('belle', 'SSF27')
     }
 
-print(theory_dictionary_SSF27['babar_hadtag']['la10575'])
-'''
+#print(theory_dictionary_SSF27['babar_hadtag']['la10575'])
+
 Tools.store_in_pickle(theory_dictionary_SSF27, 'theory/theory_dictionary_SSF27')
 
 # Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
@@ -297,4 +295,3 @@ fit_config = {
 
 Tools.store_in_pickle(fit_config, 'fit/fit_config')
 
-'''
