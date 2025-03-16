@@ -95,7 +95,7 @@ class Plot:
             else:
                 test_norm = 4.925 * 10 ** (3)
         else:
-            test_fit_results = np.array([ 0.97077755, -0.14176911, -0.28886564, 0.88106524, -0.15055227, 0.25913442, -0.13474348])
+            test_fit_results = np.array([ 0.9707776, -0.1417625, -0.28887093, 0.88105546, -0.15055346, 0.25913407, -0.13474316])
             test_fit_results = Meas.ConvertPars(test_fit_results)
             if made_up_norm == True:
                 test_norm = 0.4 
@@ -107,7 +107,7 @@ class Plot:
         if full == True:
             y = self.measurement.BsgPrediction_full(key,end, test_fit_results, test_norm)
         else:
-            y = self.measurement.BsgPrediction(key,mid, end, test_fit_results, test_norm) + self.measurement.BsgSubLeadingPrediction(key, test_fit_results, test_norm)
+            y = self.measurement.BsgPrediction(key,mid, end, test_fit_results, test_norm) #+ self.measurement.BsgSubLeadingPrediction(key, test_fit_results, test_norm)
         
         y = np.matmul(self.measurement.exp_data[key]['Smear'],y)
 
@@ -187,13 +187,13 @@ class Plot:
 
 h = Plot()
 
-h.compare('babar_hadtag')
-'''
+#h.compare('babar_hadtag')
+
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
 for i in data_tag_list:
     h.compare(i)
-'''
+
 #FIXME: Binned root histogram data has less bins than the experimental and prediction data, so I can't multiply it with the Smear-Matrix
 
 #TODO: fit.config helpful info for smear matrix and amount of data which is fitted
