@@ -69,8 +69,8 @@ class Meas:
         for order in range(np.size(settings.TheoryOrder)):
             pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
         
-        for order in range(np.size(settings.SubLeadTheoryOrder)):
-            pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+        #for order in range(np.size(settings.SubLeadTheoryOrder)):
+            #pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
