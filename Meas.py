@@ -69,8 +69,8 @@ class Meas:
         for order in range(np.size(settings.TheoryOrder)):
             pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
         
-        #for order in range(np.size(settings.SubLeadTheoryOrder)):
-            #pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+        for order in range(np.size(settings.SubLeadTheoryOrder)):
+            pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
@@ -254,3 +254,15 @@ class Meas:
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
 
+
+'''
+start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
+
+pas = Meas()
+
+p = Minuit(pas.Chisq, start_pars)
+p.migrad()
+p.hesse()
+
+print(p.values)
+'''

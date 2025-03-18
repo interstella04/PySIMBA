@@ -95,10 +95,10 @@ class Plot:
             else:
                 test_norm = 4.925 * 10 ** (3)
         else:
-            test_fit_results = np.array([ 0.9707776, -0.1417625, -0.28887093, 0.88105546, -0.15055346, 0.25913407, -0.13474316])
+            test_fit_results = np.array([ 0.92080178, 3.2751112, -1.70993966, 4.47332052, 2.27586744, -3.32433131,2.6037046 ])
             test_fit_results = Meas.ConvertPars(test_fit_results)
             if made_up_norm == True:
-                test_norm = 0.4 
+                test_norm = 0.05 
             else:
                 test_norm = 0.97077755
             
