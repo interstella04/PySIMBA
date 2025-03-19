@@ -128,7 +128,7 @@ class Meas:
                     value +=  self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
                     value *= norm
                 except IndexError:
-                    #print('SubLeadingTheory for %s and %s has only %d values per bin, so we just used the first %d Parameters' % (key,settings.SubLeadBasisExpansion,j, j))
+                    print('SubLeadingTheory for %s and %s has only %d values per bin, so we just used the first %d Parameters' % (key,settings.SubLeadBasisExpansion,j, j))
                     break
             pred = np.append(pred, value)
 
