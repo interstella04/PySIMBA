@@ -64,7 +64,7 @@ class Meas:
     def BsgPrediction_full(self, key: str, end: str, c_n_params, norm, with_sub = True):
 
         pred = np.zeros(np.size(self.exp_data[key]['dBFs']))
-        self.mb = self.mb1SPrediction(c_n_params) #HERE mb should change values in the object
+        self.mb = self.mb1SPrediction(c_n_params) #HERE mb should change values in the Meas object
 
         for order in range(np.size(settings.TheoryOrder)):
             pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
@@ -222,7 +222,12 @@ class Meas:
 
         pred_glob = np.array([])
         meas_glob = np.array([])
-        Cov_glob = np.zeros((52,52)) #FIXME Oddly specific
+
+        size = 0
+        for key in settings.KeyOrder:
+            size += np.size(self.exp_data[key]['dBFs'])-self.fit_config[key]['min']
+
+        Cov_glob = np.zeros((size,size)) #FIXME Oddly specific
 
         ntot = 0
 
@@ -232,7 +237,7 @@ class Meas:
             min = self.fit_config[key]['min']
             max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
 
-            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm) # My BsgPrediction Function is for one data set
+            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm, with_sub = True) # My BsgPrediction Function is for one data set
             pred =  full_pred[min:max+1]
             meas = self.exp_data[key]['dBFs'][min:max+1]
             Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
@@ -254,6 +259,53 @@ class Meas:
         self.M3 = self.Moment(cn,3)
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
+    
+    def Chisq_no_sub(self, pars):
+        cn = Meas.ConvertPars(pars)
+        norm = pars[0]
+
+        pred_glob = np.array([])
+        meas_glob = np.array([])
+
+        size = 0
+        for key in settings.KeyOrder:
+            size += np.size(self.exp_data[key]['dBFs'])-self.fit_config[key]['min']
+
+        Cov_glob = np.zeros((size,size)) #FIXME Oddly specific
+
+        ntot = 0
+
+        for key in settings.KeyOrder:
+
+            nbins = np.size(self.exp_data[key]['dBFs'])
+            min = self.fit_config[key]['min']
+            max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
+
+            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm, with_sub = False) # My BsgPrediction Function is for one data set
+            pred =  full_pred[min:max+1]
+            meas = self.exp_data[key]['dBFs'][min:max+1]
+            Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
+            pred_glob = np.append(pred_glob, pred)
+            meas_glob = np.append(meas_glob, meas)
+            Tools.set_sub(Cov_glob, ntot, ntot, Cov)
+            ntot += max-min
+        
+        Cov_glob = np.linalg.inv(Cov_glob) 
+
+
+        #Calculate Chi^2
+        Chisq = np.dot(meas_glob-pred_glob, np.matmul(Cov_glob, meas_glob-pred_glob)) # NOTE: Correct like this ?
+
+        self.chisq = Chisq
+        self.mb = self.mb1SPrediction(cn)
+        self.M1 = self.Moment(cn,1)
+        self.M2 = self.Moment(cn,2)
+        self.M3 = self.Moment(cn,3)
+        self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
+        return Chisq
+    
+        
+        
 
 '''
 start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])

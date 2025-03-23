@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from Meas import Meas
 from Meas import settings
 from matplotlib import rc
+from Tools import Tools
 
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
@@ -12,7 +13,8 @@ class Plot:
     
     def __init__(self):
         self.measurement = Meas()
-        return
+        self.collected_fits = Tools.pickle_to_dict('fit/collected_fits')
+        
         
     def simple_plot(self, key, fig, ax, div_bin = False, box_opt = False):
 
@@ -51,7 +53,7 @@ class Plot:
         return x,dx
 
 
-    def plot_histogram(self, bin_edges, values, fig, ax, title = '', xLabel = '', yLabel = '',div_bin = False, box_opt = False):
+    def plot_histogram(self, bin_edges, values, fig, ax, title = '', xLabel = '', yLabel = '',div_bin = False, box_opt = False, color = 'darkgreen', legend_label = ''):
 
         #Option to divide the values by the width of the bin
         if(div_bin == True):
@@ -62,9 +64,9 @@ class Plot:
         bin_edges,          
         [*values, 0],       # Values + additional 0 to close histogram
         where="post",       # Linienverlauf nach rechts
-        color="darkgreen",       
+        color=color,       
         lw=1,
-        label = '$\\mathrm{Fit Data}$'                
+        label = '$\\mathrm{%s}$' % (legend_label)               
         )
 
         
@@ -80,11 +82,12 @@ class Plot:
         ax.set_ylabel('$\\mathrm{%s}$' % yLabel, fontsize = 16)
         ax.set_title('$\\mathrm{%s}$' % title, fontsize = 20)
         plt.axis([bin_edges[0], bin_edges[-1], None, None])
-        plt.grid(axis="y", linestyle="--", alpha=0.6)
 
         return 
     
-    def check_pred(self, key, end, fig, ax,an_pars, div_bin = False, box_opt = False):
+
+    
+    def check_pred(self, key, end, fig, ax,an_pars, div_bin = False, box_opt = False, with_sub = True):
         
         x,dx = Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
 
@@ -94,7 +97,7 @@ class Plot:
             
 
 
-        y = self.measurement.BsgPrediction_full(key,end, cn, norm)
+        y = self.measurement.BsgPrediction_full(key,end, cn, norm, with_sub= with_sub)
 
         y = np.matmul(self.measurement.exp_data[key]['Smear'],y)
 
@@ -125,115 +128,78 @@ class Plot:
             plt.legend()
             plt.savefig('theory/'+key+'_check_pred')
         return
-         
+    
+    def calc_pred(self, key, an, with_sub = True):
+        cn = Meas.ConvertPars(an)
+        norm = an[0]
+        pred  = self.measurement.BsgPrediction_full(key,settings.BasisExpansion, cn, norm, with_sub= with_sub)
 
-    def compare(self, key, div_bin = False, box_opt = False):
-        fig, axs = plt.subplots(6, 3, figsize=(16, 16), sharex=True)
-
-        as23 = np.array([0.838658,-0.422353,0.106128])
-        as24 = np.array([0.914286,-0.504880,0.249589,0.207707])
-        as25 = np.array([0.042643,26.878645,24.338372,22.634102,16.416970])
-        al23 = np.array([0.359303,3947.576246,80.378891])
-        al24 = np.array([0.437288,1.694578,-3.864314,-0.074478])
-        al25 = np.array([0.671518,-1.099613,6.571752,0.371206,-0.031937])
-
-        al33 = np.array([0.148084,6016.698111,1252.626045])
-        al34 = np.array([0.502049,31806.331219,17092.225881,-1177.898593])
-        al35 = np.array([0.493309,-2.817043,20.213729,-23.930707,-0.565804])
-        as33 = np.array([0.844866,-0.407248,0.058612])
-        as34 = np.array([0.922838,-0.415097,0.152539,0.104518])
-        as35 = np.array([0.951869,-0.486525,0.203357,0.195060,0.113255])
-
-        as43 = np.array([0.843780,-0.402125,0.062842])
-        as44 = np.array([0.920390,-0.439685,0.177431,0.140803])
-        as45 = np.array([0.951448,-0.512677,0.211717,0.213323,0.118997])
-        al43 = np.array([0.155194,25038.419489,5364.382903])
-        al44 = np.array([0.382562,-0.494960,0.009761,0.127197])
-        al45 = np.array([0.520989,-3.558982,30.134934,-25.682246,-0.925172])
+        return pred
 
 
-        #sub, 2
-        self.check_pred(key, settings.BasisExpansion, fig,axs[0,0],as23, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[0,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+    
+    def compare(self, key, div_bin = False):
+        fig, axs = plt.subplots(6, 4, figsize=(24, 24), sharex=True)
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[0,1],as24, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[0,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        self.check_pred(key, settings.BasisExpansion, fig,axs[0,2],as25, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[0,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        #lead, 2
-        self.check_pred(key, settings.BasisExpansion, fig,axs[1,0],al23, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[1,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        start = 0
+        if key == 'babar_sem': start = 2
+        elif key == 'belle': start = 4
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[1,1],al24, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[1,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        self.check_pred(key, settings.BasisExpansion, fig,axs[1,2],al25, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[1,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        #sub, 3
-        self.check_pred(key, settings.BasisExpansion, fig,axs[2,0],as33, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        for ax in axs:
+            for i in ax:
+                i.set_ylabel("")
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[2,1],as34, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        self.check_pred(key, settings.BasisExpansion, fig,axs[2,2],as35, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        #lead, 3
-        self.check_pred(key, settings.BasisExpansion, fig,axs[3,0],al33, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        for i in range(start, 6, 1):
+            for j in range(0, 4, 1):
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[3,1],al34, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        self.check_pred(key, settings.BasisExpansion, fig,axs[3,2],al35, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        #sub, 4
-        self.check_pred(key, settings.BasisExpansion, fig,axs[4,0],as43, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[4,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+                if i%2 == 0:
+                    sublead_or_not = 'subleading'
+                    with_sub = True
+                    axs[i,0].set_ylabel('with '+sublead_or_not)
+                else:
+                    sublead_or_not = 'leading'
+                    with_sub = False
+                    axs[i,0].set_ylabel('just '+sublead_or_not)
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[4,1],as44, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[4,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        self.check_pred(key, settings.BasisExpansion, fig,axs[4,2],as45, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[4,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        #lead, 4
-        self.check_pred(key, settings.BasisExpansion, fig,axs[5,0],al43, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[5,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+                if i == 0 or i == 1: number_meas = 2
+                elif i == 2 or i == 3: number_meas = 3
+                else: number_meas = 4
+                
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[5,1],al44, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[5,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-        self.check_pred(key, settings.BasisExpansion, fig,axs[5,2],al45, box_opt=False, div_bin= div_bin)
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[5,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-        
-       
-        plt.tight_layout()
+                self.check_pred(key, settings.BasisExpansion, fig,axs[i,j],self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'], box_opt=False, div_bin= div_bin, with_sub=with_sub)
+                Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, legend_label= 'Fit Goal')
+                Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.hist_nom[key]['Values']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='blue', legend_label= '|Fit Goal - Pred. Data|')
+                #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.exp_data[key]['dBFs']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='hotpink', legend_label = '|Fit Goal - Exp. Data|')
+
+        handles, labels = axs[0,0].get_legend_handles_labels()  # Nur einmal Labels abrufen  
+        fig.legend(handles, labels, loc="upper left", ncol=2, fontsize=12)
+
+        fig.text(0.02, 0.8, "$\\mathrm{2 Measurements}$", va="center", ha="left", fontsize=20, fontweight="bold", rotation=90)
+        fig.text(0.02, 0.5, "$\\mathrm{3 Measurements}$", va="center", ha="left", fontsize=20, fontweight="bold", rotation=90)
+        fig.text(0.02, 0.2, "$\\mathrm{4 Measurements}$", va="center", ha="left", fontsize=20, fontweight="bold", rotation=90)
+
+
+        plt.tight_layout(rect=[0.05, 0, 1, 0.95])
 
         for ax in axs:
             for i in ax:
                 i.set_title("")
-                i.set_ylabel("")
+                i.grid(axis="y", linestyle="--", alpha=0.6)
 
-        axs[0,0].set_title("size 3")
-        axs[0,1].set_title("size 4")
-        axs[0,2].set_title("size 5")
+        axs[0,0].set_title("$\\mathrm{4 Parameter}$")
+        axs[0,1].set_title("$\\mathrm{5 Parameter}$")
+        axs[0,2].set_title("$\\mathrm{6 Parameter}$")
+        axs[0,3].set_title("$\\mathrm{7 Parameter}$")
 
+        fig.suptitle("$\\mathrm{%s}$" % self.measurement.exp_data[key]['Label'], fontsize=30, fontweight="bold")
 
+        plt.savefig('compare/'+key+'_soft_compare')
 
-        #fig.suptitle(r""+self.measurement.exp_data[key]['Label'], fontsize=16, fontweight="bold")
-
-        plt.savefig('compare/'+key+'_compare')
 
 h = Plot()
 
 
-data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
+data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem"]#, "belle"]
 
 for i in data_tag_list:
     h.compare(i)
