@@ -84,31 +84,18 @@ class Plot:
 
         return 
     
-    def check_pred(self, key, end, fig, ax, div_bin = False, box_opt = False, given_pred = False, full = True,  mid = 'NNLLNNLO', made_up_norm = False):
+    def check_pred(self, key, end, fig, ax,an_pars, div_bin = False, box_opt = False):
         
         x,dx = Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
 
-        if given_pred == True:
-            test_fit_results = np.array([0.9956, 0.0641, 0.0624, 0.0267])
-            if made_up_norm == True:
-                test_norm = 0.6
-            else:
-                test_norm = 4.925 * 10 ** (3)
-        else:
-            test_fit_results = np.array([ 0.43728816 , 1.69457777, -3.86431412, -0.07447766])
-            test_fit_results = Meas.ConvertPars(test_fit_results)
-            if made_up_norm == True:
-                test_norm = 0.05 
-            else:
-                test_norm =0.43728816
+        cn = Meas.ConvertPars(an_pars)
+        
+        norm = an_pars[0]
             
 
 
-        if full == True:
-            y = self.measurement.BsgPrediction_full(key,end, test_fit_results, test_norm)
-        else:
-            y = self.measurement.BsgPrediction(key,mid, end, test_fit_results, test_norm) #+ self.measurement.BsgSubLeadingPrediction(key, test_fit_results, test_norm)
-        
+        y = self.measurement.BsgPrediction_full(key,end, cn, norm)
+
         y = np.matmul(self.measurement.exp_data[key]['Smear'],y)
 
         if div_bin == True:
@@ -141,47 +128,105 @@ class Plot:
          
 
     def compare(self, key, div_bin = False, box_opt = False):
-        fig, axs = plt.subplots(4, 3, figsize=(16, 16), sharex=True)
+        fig, axs = plt.subplots(6, 3, figsize=(16, 16), sharex=True)
 
-        Plot.simple_plot(self, key, fig, axs[0,0], div_bin, box_opt)
+        as23 = np.array([0.838658,-0.422353,0.106128])
+        as24 = np.array([0.914286,-0.504880,0.249589,0.207707])
+        as25 = np.array([0.042643,26.878645,24.338372,22.634102,16.416970])
+        al23 = np.array([0.359303,3947.576246,80.378891])
+        al24 = np.array([0.437288,1.694578,-3.864314,-0.074478])
+        al25 = np.array([0.671518,-1.099613,6.571752,0.371206,-0.031937])
 
-        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'],self.measurement.hist_nom[key]['Values'], fig, axs[1,0],self.measurement.hist_nom[key]['Label'])
+        al33 = np.array([0.148084,6016.698111,1252.626045])
+        al34 = np.array([0.502049,31806.331219,17092.225881,-1177.898593])
+        al35 = np.array([0.493309,-2.817043,20.213729,-23.930707,-0.565804])
+        as33 = np.array([0.844866,-0.407248,0.058612])
+        as34 = np.array([0.922838,-0.415097,0.152539,0.104518])
+        as35 = np.array([0.951869,-0.486525,0.203357,0.195060,0.113255])
 
-        # Given cn's
-        self.check_pred(key, settings.BasisExpansion, fig,axs[2,0], box_opt=False, div_bin= div_bin, given_pred= True, full = True)
+        as43 = np.array([0.843780,-0.402125,0.062842])
+        as44 = np.array([0.920390,-0.439685,0.177431,0.140803])
+        as45 = np.array([0.951448,-0.512677,0.211717,0.213323,0.118997])
+        al43 = np.array([0.155194,25038.419489,5364.382903])
+        al44 = np.array([0.382562,-0.494960,0.009761,0.127197])
+        al45 = np.array([0.520989,-3.558982,30.134934,-25.682246,-0.925172])
+
+
+        #sub, 2
+        self.check_pred(key, settings.BasisExpansion, fig,axs[0,0],as23, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[0,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+        self.check_pred(key, settings.BasisExpansion, fig,axs[0,1],as24, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[0,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        self.check_pred(key, settings.BasisExpansion, fig,axs[0,2],as25, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[0,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        #lead, 2
+        self.check_pred(key, settings.BasisExpansion, fig,axs[1,0],al23, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[1,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+
+        self.check_pred(key, settings.BasisExpansion, fig,axs[1,1],al24, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[1,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        self.check_pred(key, settings.BasisExpansion, fig,axs[1,2],al25, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[1,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        #sub, 3
+        self.check_pred(key, settings.BasisExpansion, fig,axs[2,0],as33, box_opt=False, div_bin= div_bin)
         Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[2,1], box_opt=False, div_bin= div_bin, given_pred= True, full = False)
+        self.check_pred(key, settings.BasisExpansion, fig,axs[2,1],as34, box_opt=False, div_bin= div_bin)
         Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-
-        self.check_pred(key, settings.BasisExpansion, fig,axs[2,2], box_opt=False, div_bin= div_bin, given_pred= True, full = True, made_up_norm= True)
+        
+        self.check_pred(key, settings.BasisExpansion, fig,axs[2,2],as35, box_opt=False, div_bin= div_bin)
         Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[2,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-
-        #Calculated cn's
-        self.check_pred(key, settings.BasisExpansion, fig,axs[3,0], box_opt=False, div_bin= div_bin, given_pred= False, full = True)
+        
+        #lead, 3
+        self.check_pred(key, settings.BasisExpansion, fig,axs[3,0],al33, box_opt=False, div_bin= div_bin)
         Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
 
-        self.check_pred(key, settings.BasisExpansion, fig,axs[3,1], box_opt=False, div_bin= div_bin, given_pred= False, full = False)
+        self.check_pred(key, settings.BasisExpansion, fig,axs[3,1],al34, box_opt=False, div_bin= div_bin)
         Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
-
-        self.check_pred(key, settings.BasisExpansion, fig,axs[3,2], box_opt=False, div_bin= div_bin, given_pred= False, full = True, made_up_norm= True)
+        
+        self.check_pred(key, settings.BasisExpansion, fig,axs[3,2],al35, box_opt=False, div_bin= div_bin)
         Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[3,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        #sub, 4
+        self.check_pred(key, settings.BasisExpansion, fig,axs[4,0],as43, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[4,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
 
+        self.check_pred(key, settings.BasisExpansion, fig,axs[4,1],as44, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[4,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        self.check_pred(key, settings.BasisExpansion, fig,axs[4,2],as45, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[4,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        #lead, 4
+        self.check_pred(key, settings.BasisExpansion, fig,axs[5,0],al43, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[5,0], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
 
+        self.check_pred(key, settings.BasisExpansion, fig,axs[5,1],al44, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[5,1], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+        self.check_pred(key, settings.BasisExpansion, fig,axs[5,2],al45, box_opt=False, div_bin= div_bin)
+        Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[5,2], self.measurement.hist_nom[key]['Label'], div_bin=div_bin)
+        
+       
         plt.tight_layout()
 
         for ax in axs:
             for i in ax:
                 i.set_title("")
+                i.set_ylabel("")
 
-        axs[2,0].set_title("Full prediction, Given Norm")
-        axs[2,1].set_title("NNLLNNLO prediction, Given Norm")
-        axs[2,2].set_title("Full prediction, Made up Norm")
+        axs[0,0].set_title("size 3")
+        axs[0,1].set_title("size 4")
+        axs[0,2].set_title("size 5")
 
-        axs[2,0].set_ylabel("Given cn's")
-        axs[3,0].set_ylabel("Calculated cn's")
 
-        fig.suptitle(r""+self.measurement.exp_data[key]['Label'], fontsize=16, fontweight="bold")
+
+        #fig.suptitle(r""+self.measurement.exp_data[key]['Label'], fontsize=16, fontweight="bold")
 
         plt.savefig('compare/'+key+'_compare')
 

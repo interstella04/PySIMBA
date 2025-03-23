@@ -14,7 +14,7 @@ class settings:
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
     SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
     FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
-    KeyOrder = ["babar_incl", "babar_hadtag"]#, "babar_sem", "belle"]
+    KeyOrder = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
     BasisExpansion = '0575'
     SubLeadBasisExpansion = '10575' # ATTENTION, is in SubLeadingPred used
 
@@ -61,7 +61,7 @@ class Meas:
 
         return
 
-    def BsgPrediction_full(self, key: str, end: str, c_n_params, norm):
+    def BsgPrediction_full(self, key: str, end: str, c_n_params, norm, with_sub = True):
 
         pred = np.zeros(np.size(self.exp_data[key]['dBFs']))
         self.mb = self.mb1SPrediction(c_n_params) #HERE mb should change values in the object
@@ -69,8 +69,9 @@ class Meas:
         for order in range(np.size(settings.TheoryOrder)):
             pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
         
-        for order in range(np.size(settings.SubLeadTheoryOrder)):
-            pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+        if with_sub == True:
+            for order in range(np.size(settings.SubLeadTheoryOrder)):
+                pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
@@ -128,7 +129,7 @@ class Meas:
                     value +=  self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
                     value *= norm
                 except IndexError:
-                    print('SubLeadingTheory for %s and %s has only %d values per bin, so we just used the first %d Parameters' % (key,settings.SubLeadBasisExpansion,j, j))
+                    print('Something is awfully wrong here')
                     break
             pred = np.append(pred, value)
 
@@ -221,7 +222,7 @@ class Meas:
 
         pred_glob = np.array([])
         meas_glob = np.array([])
-        Cov_glob = np.zeros((17,17)) #FIXME Oddly specific
+        Cov_glob = np.zeros((52,52)) #FIXME Oddly specific
 
         ntot = 0
 
@@ -254,15 +255,24 @@ class Meas:
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
 
-
 '''
 start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
 
-pas = Meas()
 
-p = Minuit(pas.Chisq, start_pars)
-p.migrad()
-p.hesse()
+with open('results.csv', 'a') as file:
+    for i in range(3, np.size(start_pars)-1, 1):
+        print(range(3, np.size(start_pars)-1, 1))
+        mes = Meas()
+        m = Minuit(mes.Chisq, start_pars[0:i])
+        m.migrad()
+        m.hesse()
+        #m.minos()
 
-print(p.values)
+        file.write('l;')
+        file.write('%d;' % np.size(start_pars[0:i]))
+        for j in range(np.size(start_pars[0:i])):
+            if j == np.size(start_pars[0:i])-1: file.write('%f'% m.values[j])
+            else: file.write('%f;'% m.values[j])
+        
+        file.write('\n')'
 '''
