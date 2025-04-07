@@ -1,7 +1,8 @@
 \babel@toc {english}{}\relax 
 \contentsline {section}{\numberline {1}What I did}{2}{section.1}%
 \contentsline {section}{\numberline {2}Comparisons}{2}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Babar hadronic tag}{3}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Babar inclusive spectra}{4}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Babar semileptonic}{5}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Belle}{6}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.1}Results for each fit}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Babar hadronic tag}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Babar inclusive spectra}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Babar semileptonic}{7}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Belle}{8}{subsection.2.5}%

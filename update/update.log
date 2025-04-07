@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.3.1)  23 MAR 2025 22:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.3.1)  6 APR 2025 20:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -411,40 +411,61 @@ Package: enumitem 2019/06/20 v3.9 Customized lists
 Package: physics 
  (c:/texlive/2022/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
 Package: xparse 2023-02-02 L3 Experimental document command parser
-)) (./update.aux)
+)) (c:/texlive/2022/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2022/06/12 v2.14 LaTeX color extensions (UK)
+ (c:/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 227.
+ (c:/texlive/2022/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2022/06/20 v1.0f Color table columns (DPC)
+\everycr=\toks30
+\minrowclearance=\skip58
+\rownum=\count322
+) (c:/texlive/2022/texmf-dist/tex/latex/graphics/mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1353.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1357.
+Package xcolor Info: Model `RGB' extended on input line 1369.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1371.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1374.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1375.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1376.
+) (./update.aux)
 \openout1 = `update.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
  (c:/texlive/2022/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count322
+\scratchcounter=\count323
 \scratchdimen=\dimen197
 \scratchbox=\box68
-\nofMPsegments=\count323
-\nofMParguments=\count324
-\everyMPshowfont=\toks30
-\MPscratchCnt=\count325
+\nofMPsegments=\count324
+\nofMParguments=\count325
+\everyMPshowfont=\toks31
+\MPscratchCnt=\count326
 \MPscratchDim=\dimen198
-\MPnumerator=\count326
-\makeMPintoPDFobject=\count327
-\everyMPtoPDFconversion=\toks31
+\MPnumerator=\count327
+\makeMPintoPDFobject=\count328
+\everyMPtoPDFconversion=\toks32
 ) (c:/texlive/2022/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -456,7 +477,7 @@ Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 24.
+Package hyperref Info: Link coloring OFF on input line 25.
  (./update.out) (./update.out)
 \@outlinefile=\write3
 \openout3 = `update.out'.
@@ -496,13 +517,6 @@ Package hyperref Info: Link coloring OFF on input line 24.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(c:/texlive/2022/texmf-dist/tex/latex/graphics/color.sty
-Package: color 2022/01/06 v1.3d Standard LaTeX Color (DPC)
- (c:/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg
-File: color.cfg 2016/01/02 v1.6 sample color configuration
-)
-Package color Info: Driver file: pdftex.def on input line 149.
- (c:/texlive/2022/texmf-dist/tex/latex/graphics/mathcolor.ltx))
 
 Package siunitx Warning: Detected the "physics" package:
 (siunitx)                omitting definition of \qty.
@@ -517,12 +531,12 @@ Package siunitx Warning: Detected the "physics" package:
 (c:/texlive/2022/texmf-dist/tex/latex/translations/translations-basic-dictionary-english.trsl
 File: translations-basic-dictionary-english.trsl (english translation file `translations-basic-dictionary')
 )
-Package translations Info: loading dictionary `translations-basic-dictionary' for `english'. on input line 24.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 27.
+Package translations Info: loading dictionary `translations-basic-dictionary' for `english'. on input line 25.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 28.
  (c:/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 27.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 28.
  (c:/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (./update.toc)
@@ -532,81 +546,102 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
  [1
 
 {c:/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<equations.png, id=43, 1547.7825pt x 1202.24156pt>
+<equations.png, id=48, 1547.7825pt x 1202.24156pt>
 File: equations.png Graphic file (type png)
 <use equations.png>
-Package pdftex.def Info: equations.png  used on input line 35.
+Package pdftex.def Info: equations.png  used on input line 36.
 (pdftex.def)             Requested size: 464.33833pt x 360.67525pt.
 
-Overfull \hbox (9.09422pt too wide) in paragraph at lines 35--36
+Overfull \hbox (9.09422pt too wide) in paragraph at lines 36--37
  [][] 
  []
 
-<d2_fit_config.png, id=45, 692.5875pt x 243.91125pt>
+<d2_fit_config.png, id=50, 692.5875pt x 243.91125pt>
 File: d2_fit_config.png Graphic file (type png)
 <use d2_fit_config.png>
-Package pdftex.def Info: d2_fit_config.png  used on input line 42.
+Package pdftex.def Info: d2_fit_config.png  used on input line 43.
 (pdftex.def)             Requested size: 207.77785pt x 73.17393pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--51
+
+ []
+
 [2 <./equations.png> <./d2_fit_config.png>]
-<../compare/babar_hadtag_soft_compare.png, id=57, 1734.48pt x 1734.48pt>
+Underfull \hbox (badness 5667) in paragraph at lines 57--57
+[]|\OT1/cmr/m/n/12 With or with-out
+ []
+
+
+Underfull \hbox (badness 4013) in paragraph at lines 57--57
+[]|\OT1/cmr/m/n/12 Number of fit-ted
+ []
+
+
+Overfull \hbox (69.86188pt too wide) in paragraph at lines 55--89
+[][] 
+ []
+
+[3]
+<../compare/babar_hadtag_soft_compare.png, id=68, 1734.48pt x 1734.48pt>
 File: ../compare/babar_hadtag_soft_compare.png Graphic file (type png)
 <use ../compare/babar_hadtag_soft_compare.png>
-Package pdftex.def Info: ../compare/babar_hadtag_soft_compare.png  used on input line 59.
+Package pdftex.def Info: ../compare/babar_hadtag_soft_compare.png  used on input line 134.
 (pdftex.def)             Requested size: 520.34802pt x 520.34802pt.
 
-Overfull \hbox (65.10391pt too wide) in paragraph at lines 59--60
+Overfull \hbox (65.10391pt too wide) in paragraph at lines 134--135
  [][] 
  []
 
-<../compare/babar_incl_soft_compare.png, id=58, 1734.48pt x 1734.48pt>
+[4]
+<../compare/babar_incl_soft_compare.png, id=74, 1734.48pt x 1734.48pt>
 File: ../compare/babar_incl_soft_compare.png Graphic file (type png)
 <use ../compare/babar_incl_soft_compare.png>
-Package pdftex.def Info: ../compare/babar_incl_soft_compare.png  used on input line 65.
+Package pdftex.def Info: ../compare/babar_incl_soft_compare.png  used on input line 140.
 (pdftex.def)             Requested size: 520.34802pt x 520.34802pt.
 
-Overfull \hbox (65.10391pt too wide) in paragraph at lines 65--66
+Overfull \hbox (65.10391pt too wide) in paragraph at lines 140--141
  [][] 
  []
 
-[3 <../compare/babar_hadtag_soft_compare.png>]
-<../compare/babar_sem_soft_compare.png, id=65, 1734.48pt x 1734.48pt>
+[5 <../compare/babar_hadtag_soft_compare.png>]
+<../compare/babar_sem_soft_compare.png, id=81, 1734.48pt x 1734.48pt>
 File: ../compare/babar_sem_soft_compare.png Graphic file (type png)
 <use ../compare/babar_sem_soft_compare.png>
-Package pdftex.def Info: ../compare/babar_sem_soft_compare.png  used on input line 71.
+Package pdftex.def Info: ../compare/babar_sem_soft_compare.png  used on input line 146.
 (pdftex.def)             Requested size: 520.34802pt x 520.34802pt.
 
-Overfull \hbox (65.10391pt too wide) in paragraph at lines 71--72
+Overfull \hbox (65.10391pt too wide) in paragraph at lines 146--147
  [][] 
  []
 
-[4 <../compare/babar_incl_soft_compare.png>]
-<../compare/belle_soft_compare.png, id=72, 1734.48pt x 1734.48pt>
+[6 <../compare/babar_incl_soft_compare.png>]
+<../compare/belle_soft_compare.png, id=88, 1734.48pt x 1734.48pt>
 File: ../compare/belle_soft_compare.png Graphic file (type png)
 <use ../compare/belle_soft_compare.png>
-Package pdftex.def Info: ../compare/belle_soft_compare.png  used on input line 77.
+Package pdftex.def Info: ../compare/belle_soft_compare.png  used on input line 152.
 (pdftex.def)             Requested size: 520.34802pt x 520.34802pt.
 
-Overfull \hbox (65.10391pt too wide) in paragraph at lines 77--78
+Overfull \hbox (65.10391pt too wide) in paragraph at lines 152--153
  [][] 
  []
 
-[5 <../compare/babar_sem_soft_compare.png>] [6 <../compare/belle_soft_compare.png>] (./update.aux)
+[7 <../compare/babar_sem_soft_compare.png>] [8 <../compare/belle_soft_compare.png>] (./update.aux)
 Package rerunfilecheck Info: File `update.out' has not changed.
-(rerunfilecheck)             Checksum: 507337C20C39D6D8F57B113A85EBE20D;760.
+(rerunfilecheck)             Checksum: 1AC8131B965B32BF28AC636C018B470D;926.
  ) 
 Here is how much of TeX's memory you used:
- 18144 strings out of 476024
- 352717 string characters out of 5794017
- 1854382 words of memory out of 5000000
- 38357 multiletter control sequences out of 15000+600000
+ 18616 strings out of 476024
+ 358365 string characters out of 5794017
+ 1889382 words of memory out of 5000000
+ 38818 multiletter control sequences out of 15000+600000
  521397 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,8n,78p,410b,903s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on update.pdf (6 pages, 1113441 bytes).
+ 75i,12n,78p,436b,903s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on update.pdf (8 pages, 1191998 bytes).
 PDF statistics:
- 118 PDF objects out of 1000 (max. 8388607)
- 85 compressed objects within 1 object stream
- 20 named destinations out of 1000 (max. 500000)
- 79 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 142 PDF objects out of 1000 (max. 8388607)
+ 104 compressed objects within 2 object streams
+ 25 named destinations out of 1000 (max. 500000)
+ 87 words of extra memory for PDF output out of 10000 (max. 10000000)
 
