@@ -14,7 +14,7 @@ class settings:
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
     SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
     FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
-    KeyOrder = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
+    KeyOrder = ["babar_sem", "babar_hadtag","babar_incl" , "belle"]
     BasisExpansion = '0575'
     SubLeadBasisExpansion = '10575' # ATTENTION, is in SubLeadingPred used
 
@@ -303,28 +303,3 @@ class Meas:
         self.M3 = self.Moment(cn,3)
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
         return Chisq
-    
-        
-        
-
-'''
-start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
-
-
-with open('results.csv', 'a') as file:
-    for i in range(3, np.size(start_pars)-1, 1):
-        print(range(3, np.size(start_pars)-1, 1))
-        mes = Meas()
-        m = Minuit(mes.Chisq, start_pars[0:i])
-        m.migrad()
-        m.hesse()
-        #m.minos()
-
-        file.write('l;')
-        file.write('%d;' % np.size(start_pars[0:i]))
-        for j in range(np.size(start_pars[0:i])):
-            if j == np.size(start_pars[0:i])-1: file.write('%f'% m.values[j])
-            else: file.write('%f;'% m.values[j])
-        
-        file.write('\n')'
-'''

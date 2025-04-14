@@ -14,6 +14,7 @@ class Plot:
     def __init__(self):
         self.measurement = Meas()
         self.collected_fits = Tools.pickle_to_dict('fit/collected_fits')
+        self.just_sem = Tools.pickle_to_dict('fit/just_sem')
         
         
     def simple_plot(self, key, fig, ax, div_bin = False, box_opt = False):
@@ -169,9 +170,9 @@ class Plot:
                 #Plots experimental Data and Prediction
                 self.check_pred(key, settings.BasisExpansion, fig,axs[i,j],self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'], box_opt=False, div_bin= div_bin, with_sub=with_sub)
                 #Plots Histogram Data from Root file
-                #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, legend_label= 'Fit Goal')
+                Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, legend_label= 'Fit Goal')
                 #Plots difference between previous fit and my fit
-                #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.hist_nom[key]['Values']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='blue', legend_label= '|Fit Goal - Pred. Data|')
+                Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.hist_nom[key]['Values']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='blue', legend_label= '|Fit Goal - Pred. Data|')
                 #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.exp_data[key]['dBFs']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='hotpink', legend_label = '|Fit Goal - Exp. Data|')
 
         handles, labels = axs[5,3].get_legend_handles_labels()  # Nur einmal Labels abrufen  
@@ -203,16 +204,69 @@ class Plot:
         fig.suptitle("$\\mathrm{%s}$" % self.measurement.exp_data[key]['Label'], fontsize=30, fontweight="bold")
 
         plt.savefig('compare/'+key+'_soft_compare')
+    
+    def just_one(self, key, div_bin = False):
+        fig, axs = plt.subplots(2, 4, figsize=(24, 16), sharex=True)
 
+        start = 0
+
+        for ax in axs:
+            for i in ax:
+                i.set_ylabel("")
+
+        for i in range(start, 2, 1):
+            for j in range(0, 4, 1):
+
+                if i%2 == 0:
+                    sublead_or_not = 'subleading'
+                    with_sub = True
+                    axs[i,0].set_ylabel('with '+sublead_or_not, fontsize = 20)
+                else:
+                    sublead_or_not = 'leading'
+                    with_sub = False
+                    axs[i,0].set_ylabel('just '+sublead_or_not, fontsize = 20)
+
+                #Plots experimental Data and Prediction
+                self.check_pred(key, settings.BasisExpansion, fig,axs[i,j],self.just_sem['1'][sublead_or_not]['%d' % (j+4)]['an'], box_opt=False, div_bin= div_bin, with_sub=with_sub)
+                #Plots Histogram Data from Root file
+                Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, legend_label= 'Fit Goal')
+                #Plots difference between previous fit and my fit
+                Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.hist_nom[key]['Values']-self.calc_pred(key,self.just_sem['1'][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='blue', legend_label= '|Fit Goal - Pred. Data|')
+                #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.exp_data[key]['dBFs']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='hotpink', legend_label = '|Fit Goal - Exp. Data|')
+
+        handles, labels = axs[0,0].get_legend_handles_labels()  # Nur einmal Labels abrufen  
+        fig.legend(handles, labels, loc="upper left", ncol=2, fontsize=20)
+
+        fig.text(0.02, 0.5, "$\\mathrm{1 Measurement}$", va="center", ha="left", fontsize=30, fontweight="bold", rotation=90)
+
+        plt.tight_layout(rect=[0.05, 0, 1, 0.95])
+
+        for ax in axs:
+            for i in ax:
+                i.set_title("")
+                i.grid(axis="y", linestyle="--", alpha=0.6)
+
+        axs[0,0].set_title("$\\mathrm{4 Parameter}$", fontsize = 30)
+        axs[0,1].set_title("$\\mathrm{5 Parameter}$", fontsize = 30)
+        axs[0,2].set_title("$\\mathrm{6 Parameter}$", fontsize = 30)
+        axs[0,3].set_title("$\\mathrm{7 Parameter}$", fontsize = 30)
+
+        fig.suptitle("$\\mathrm{%s}$" % self.measurement.exp_data[key]['Label'], fontsize=30, fontweight="bold")
+
+        plt.savefig('compare/just_'+key)
 
 h = Plot()
 
 
-#data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem"]#, "belle"]
-data_tag_list = ["belle"]
+'''
+data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem"]#, "belle"]
+#data_tag_list = ["belle"]
+data_tag_list = ["babar_sem"]
 
 for i in data_tag_list:
     h.compare(i)
+'''
+h.just_one('babar_sem')
 
 #FIXME: Binned root histogram data has less bins than the experimental and prediction data, so I can't multiply it with the Smear-Matrix
 

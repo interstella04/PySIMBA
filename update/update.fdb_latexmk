@@ -1,10 +1,11 @@
 # Fdb version 4
-["pdflatex"] 1743965988 "c:/Users/Stell/OneDrive/Desktop/Stella/UNI_Bonn/Studium Physik/SHK_bernlochner/SHK_SIMBA/update/update.tex" "update.pdf" "update" 1743965992 0
+["pdflatex"] 1744019602 "c:/Users/Stell/OneDrive/Desktop/Stella/UNI_Bonn/Studium Physik/SHK_bernlochner/SHK_SIMBA/update/update.tex" "update.pdf" "update" 1744019607 0
   "../compare/babar_hadtag_soft_compare.png" 1743965031 227027 5a6169b6a665138f8befbf6817f4c75f ""
   "../compare/babar_incl_soft_compare.png" 1743965027 263819 791b4eadf065fab6c8accd3f23ce5dcf ""
   "../compare/babar_sem_soft_compare.png" 1743965036 215232 b3ec21fd23cddf979ec6a2ad1ac6fd8c ""
   "../compare/belle_soft_compare.png" 1743965148 148489 0225684ec2f590565e551402453ce48b ""
-  "c:/Users/Stell/OneDrive/Desktop/Stella/UNI_Bonn/Studium Physik/SHK_bernlochner/SHK_SIMBA/update/update.tex" 1743965982 6462 88bd770203b2be1f4ab01b840e0ae4a4 ""
+  "../compare/just_babar_sem.png" 1744017989 115524 5bf1903f6220a12948b72d0203c1ee86 ""
+  "c:/Users/Stell/OneDrive/Desktop/Stella/UNI_Bonn/Studium Physik/SHK_bernlochner/SHK_SIMBA/update/update.tex" 1744019601 8857 31fd7d986a9bf8723264e71b9c344ab2 ""
   "c:/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1677672572 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "c:/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1677668769 1004 54797486969f23fa377b128694d548df ""
   "c:/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1677668769 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -119,10 +120,10 @@
   "c:/texlive/2022/texmf.cnf" 1677681628 713 e69b156964470283e0530f5060668171 ""
   "d2_fit_config.png" 1742767480 25956 999d8318d1fbcf03069cff5fd0fd5647 ""
   "equations.png" 1742767480 580794 c05b68006c52fea27bae9a14078ece30 ""
-  "update.aux" 1743965992 2771 838003660bbf30f0fe2302ab2e6a851b "pdflatex"
-  "update.out" 1743965992 926 1ac8131b965b32bf28ac636c018b470d "pdflatex"
-  "update.tex" 1743965982 6462 88bd770203b2be1f4ab01b840e0ae4a4 ""
-  "update.toc" 1743965992 577 b7b607aa463fe081078f3c1c6b83ddfa "pdflatex"
+  "update.aux" 1744019607 3639 1f128e9121d254ed0caaa7e03e7ed85f "pdflatex"
+  "update.out" 1744019607 1220 0c6dbf9bfe2bd80600c2d78d0eeac1ab "pdflatex"
+  "update.tex" 1744019601 8857 31fd7d986a9bf8723264e71b9c344ab2 ""
+  "update.toc" 1744019607 737 31dd71b771b828e11d369155936d4bef "pdflatex"
   (generated)
   "update.aux"
   "update.log"

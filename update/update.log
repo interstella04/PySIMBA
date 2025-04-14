@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.3.1)  6 APR 2025 20:59
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.3.1)  7 APR 2025 11:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -546,7 +546,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
  [1
 
 {c:/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<equations.png, id=48, 1547.7825pt x 1202.24156pt>
+<equations.png, id=58, 1547.7825pt x 1202.24156pt>
 File: equations.png Graphic file (type png)
 <use equations.png>
 Package pdftex.def Info: equations.png  used on input line 36.
@@ -556,7 +556,7 @@ Overfull \hbox (9.09422pt too wide) in paragraph at lines 36--37
  [][] 
  []
 
-<d2_fit_config.png, id=50, 692.5875pt x 243.91125pt>
+<d2_fit_config.png, id=60, 692.5875pt x 243.91125pt>
 File: d2_fit_config.png Graphic file (type png)
 <use d2_fit_config.png>
 Package pdftex.def Info: d2_fit_config.png  used on input line 43.
@@ -582,7 +582,7 @@ Overfull \hbox (69.86188pt too wide) in paragraph at lines 55--89
  []
 
 [3]
-<../compare/babar_hadtag_soft_compare.png, id=68, 1734.48pt x 1734.48pt>
+<../compare/babar_hadtag_soft_compare.png, id=78, 1734.48pt x 1734.48pt>
 File: ../compare/babar_hadtag_soft_compare.png Graphic file (type png)
 <use ../compare/babar_hadtag_soft_compare.png>
 Package pdftex.def Info: ../compare/babar_hadtag_soft_compare.png  used on input line 134.
@@ -593,7 +593,7 @@ Overfull \hbox (65.10391pt too wide) in paragraph at lines 134--135
  []
 
 [4]
-<../compare/babar_incl_soft_compare.png, id=74, 1734.48pt x 1734.48pt>
+<../compare/babar_incl_soft_compare.png, id=84, 1734.48pt x 1734.48pt>
 File: ../compare/babar_incl_soft_compare.png Graphic file (type png)
 <use ../compare/babar_incl_soft_compare.png>
 Package pdftex.def Info: ../compare/babar_incl_soft_compare.png  used on input line 140.
@@ -604,7 +604,7 @@ Overfull \hbox (65.10391pt too wide) in paragraph at lines 140--141
  []
 
 [5 <../compare/babar_hadtag_soft_compare.png>]
-<../compare/babar_sem_soft_compare.png, id=81, 1734.48pt x 1734.48pt>
+<../compare/babar_sem_soft_compare.png, id=91, 1734.48pt x 1734.48pt>
 File: ../compare/babar_sem_soft_compare.png Graphic file (type png)
 <use ../compare/babar_sem_soft_compare.png>
 Package pdftex.def Info: ../compare/babar_sem_soft_compare.png  used on input line 146.
@@ -615,7 +615,7 @@ Overfull \hbox (65.10391pt too wide) in paragraph at lines 146--147
  []
 
 [6 <../compare/babar_incl_soft_compare.png>]
-<../compare/belle_soft_compare.png, id=88, 1734.48pt x 1734.48pt>
+<../compare/belle_soft_compare.png, id=98, 1734.48pt x 1734.48pt>
 File: ../compare/belle_soft_compare.png Graphic file (type png)
 <use ../compare/belle_soft_compare.png>
 Package pdftex.def Info: ../compare/belle_soft_compare.png  used on input line 152.
@@ -625,23 +625,49 @@ Overfull \hbox (65.10391pt too wide) in paragraph at lines 152--153
  [][] 
  []
 
-[7 <../compare/babar_sem_soft_compare.png>] [8 <../compare/belle_soft_compare.png>] (./update.aux)
+[7 <../compare/babar_sem_soft_compare.png>]
+<../compare/just_babar_sem.png, id=106, 1734.48pt x 1156.32pt>
+File: ../compare/just_babar_sem.png Graphic file (type png)
+<use ../compare/just_babar_sem.png>
+Package pdftex.def Info: ../compare/just_babar_sem.png  used on input line 161.
+(pdftex.def)             Requested size: 520.34802pt x 346.89868pt.
+
+Overfull \hbox (65.10391pt too wide) in paragraph at lines 161--162
+ [][] 
+ []
+
+[8 <../compare/belle_soft_compare.png>]
+Underfull \hbox (badness 5667) in paragraph at lines 168--168
+[]|\OT1/cmr/m/n/12 With or with-out
+ []
+
+
+Underfull \hbox (badness 4013) in paragraph at lines 168--168
+[]|\OT1/cmr/m/n/12 Number of fit-ted
+ []
+
+
+Overfull \hbox (63.98694pt too wide) in paragraph at lines 166--183
+[][] 
+ []
+
+[9 <../compare/just_babar_sem.png>] [10] (./update.aux)
 Package rerunfilecheck Info: File `update.out' has not changed.
-(rerunfilecheck)             Checksum: 1AC8131B965B32BF28AC636C018B470D;926.
+(rerunfilecheck)             Checksum: 0C6DBF9BFE2BD80600C2D78D0EEAC1AB;1220.
  ) 
 Here is how much of TeX's memory you used:
- 18616 strings out of 476024
- 358365 string characters out of 5794017
+ 18636 strings out of 476024
+ 358758 string characters out of 5794017
  1889382 words of memory out of 5000000
- 38818 multiletter control sequences out of 15000+600000
+ 38828 multiletter control sequences out of 15000+600000
  521397 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,12n,78p,436b,903s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on update.pdf (8 pages, 1191998 bytes).
+Output written on update.pdf (10 pages, 1296569 bytes).
 PDF statistics:
- 142 PDF objects out of 1000 (max. 8388607)
- 104 compressed objects within 2 object streams
- 25 named destinations out of 1000 (max. 500000)
- 87 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 168 PDF objects out of 1000 (max. 8388607)
+ 126 compressed objects within 2 object streams
+ 34 named destinations out of 1000 (max. 500000)
+ 108 words of extra memory for PDF output out of 10000 (max. 10000000)
 

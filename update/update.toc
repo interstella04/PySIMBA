@@ -6,3 +6,5 @@
 \contentsline {subsection}{\numberline {2.3}Babar inclusive spectra}{6}{subsection.2.3}%
 \contentsline {subsection}{\numberline {2.4}Babar semileptonic}{7}{subsection.2.4}%
 \contentsline {subsection}{\numberline {2.5}Belle}{8}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Just Babar semileptonic}{8}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Open Questions}{10}{section.3}%

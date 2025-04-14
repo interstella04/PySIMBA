@@ -60,7 +60,7 @@ class Fitter:
         return overall
 
 start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
-
+'''
 collected_fits ={
     '2': Fitter.collect_fit_data(start_pars, 4,7,no_meas = 4),
     '3': Fitter.collect_fit_data(start_pars, 4,7,no_meas = 3),
@@ -68,3 +68,10 @@ collected_fits ={
 }
 
 Tools.store_in_pickle(collected_fits, 'fit/collected_fits')
+'''
+
+just_sem = {
+    '1': Fitter.collect_fit_data(start_pars, 4,7, no_meas=1)
+}
+
+Tools.store_in_pickle(just_sem, 'fit/just_sem')
