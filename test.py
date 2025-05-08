@@ -36,7 +36,7 @@ with open('cn_pars.csv', 'w') as f:
                 f.write(r'\\' + '\n')
 
 '''
-
+'''
 just_sem = Tools.pickle_to_dict('fit/just_sem')
 
 with open('table_sem.csv', 'w') as file:
@@ -63,3 +63,9 @@ with open('cn_pars_sem.csv', 'w') as f:
                     f.write('&'+ line)
                 
                 f.write(r'\\' + '\n')
+
+'''
+
+test_for_cov = Tools.pickle_to_dict('fit/collected_fits')
+
+print(test_for_cov['%d' % (4)]['subleading']['%d' % (2+4)]['glob_cov'])

@@ -14,9 +14,9 @@ class settings:
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
     SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
     FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
-    KeyOrder = ["babar_sem", "babar_hadtag","babar_incl" , "belle"]
+    KeyOrder = ["belle", "babar_hadtag", "babar_sem", "babar_incl"]
     BasisExpansion = '0575'
-    SubLeadBasisExpansion = '10575' # ATTENTION, is in SubLeadingPred used
+    SubLeadBasisExpansion = '10575' # ATTENTION, is used in SubLeadingPred
 
     DOMomentConstraints: bool #Should the Constraints be in the calculation or not
     
@@ -59,6 +59,9 @@ class Meas:
         self.M3: float
         self.la: float
 
+        # New line to check global covariance matrix, can be deleted
+        self.glob_cov = [0]
+
         return
 
     def BsgPrediction_full(self, key: str, end: str, c_n_params, norm, with_sub = True):
@@ -67,11 +70,16 @@ class Meas:
         self.mb = self.mb1SPrediction(c_n_params) #HERE mb should change values in the Meas object
 
         for order in range(np.size(settings.TheoryOrder)):
-            pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
-        
+            try:
+                pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
+            except RuntimeWarning:
+                print('BsgPred:'+self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ))
+                print('TheoPre:'+self.TheoryPrefactor(settings.TheoryOrder[order], norm))
+                print('CurrPred:'+ pred)
+
         if with_sub == True:
             for order in range(np.size(settings.SubLeadTheoryOrder)):
-                pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder[order], norm)
+                pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder, norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
@@ -91,7 +99,10 @@ class Meas:
             value *= settings.C2C7 / np.sqrt(norm) * settings.VtbVts * self.mb
             value *= settings.La2 / self.mb
         elif ('27' in TheoryOrder):
-            value *= settings.C2C7 / np.sqrt(norm) * settings.VtbVts * self.mb
+            try:
+                value *= settings.C2C7 / np.sqrt(norm) * settings.VtbVts * self.mb
+            except RuntimeWarning:
+                print('Norm for 27%s :' % (TheoryOrder) + norm)
         elif ('28' in TheoryOrder):
             value *= settings.C2C8 / norm * np.power(settings.VtbVts * self.mb, 2.0)
         elif ('88' in TheoryOrder):
@@ -100,7 +111,10 @@ class Meas:
             value *= np.power(settings.VtbVts * self.mb, 2.0)
         elif ('78'  in TheoryOrder):
             value *= settings.C8C7
-            value /= np.sqrt(norm)
+            try:
+                value /= np.sqrt(norm)
+            except RuntimeWarning:
+                print('Norm for 78%s :' % (TheoryOrder) + norm)
             value *= settings.VtbVts * self.mb
         
         return value
@@ -114,7 +128,11 @@ class Meas:
             for j in range(np.size(c_n_params)):
                 for k in range(np.size(c_n_params)):
                     value += self.theory_expx3[key][mid]['la'+end]['Values'][i][j][k] * c_n_params[j] * c_n_params[k] 
-                    value *= norm
+                    try:
+                        value *= norm
+                    except RuntimeWarning:
+                        print('Value:' + value)
+                        print('Norm:' + norm)
             pred = np.append(pred, value)
         return pred 
 
@@ -135,19 +153,15 @@ class Meas:
 
         return pred
     
-    def SubLeadPars_read(self, key:str, end:str): #TODO: eigentlich Quatsch diese Funktion
-        return self.theory_SSF[key]['SSF27'][end]['Values']
-    
     # puts Zoltan's SF into the prediction
     # converts c_n's into subleading coefficients
 
-    #TODO: c_n_params not used, also in c++ code?
     def SubLeadPars(self, c_n_params, d2: float):
         
         Rho2 = settings.rho2
         mB = settings.mB
         mb = self.mb1SPrediction(c_n_params)
-        la = self.lambda11SPrediction(c_n_params)
+        la = self.theory_SSF['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda']#TODO: Debends on key babar_hadtag, doesn't bother but not pretty
         Lambda2 = settings.La2
 
 
@@ -163,16 +177,18 @@ class Meas:
     
     
     # Calculate shape fuction moment of order 'order'
-    def Moment(self, c_n_params, order: int): #TODO: Test with Values for c_n
+    def Moment(self, c_n_params, order: int):
         if (order > np.size(self.Fmn_moments['expx3']['Moment'])): print('Meas.Moment(): requested an order of moment, that cannot be calculated')
         value = 0
+
+        prepared_moment = np.pow(self.theory_SSF['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda'], order) * self.Fmn_moments['expx3']['Values'][order] #TODO: Debends on key babar_hadtag, doesn't bother but not pretty
         for i in range(np.size(c_n_params)):
             for j in range(np.size(c_n_params)):
-                value += self.Fmn_moments['expx3']['Values'][order][i][j] * c_n_params[i] * c_n_params[j] #TODO: Dont know if indices are correct
+                value += prepared_moment[i][j] * c_n_params[i] * c_n_params[j]
         return value
     
     # Calculate mb^1S for a given set of cn's
-    def mb1SPrediction(self, c_n_params): #TODO: Test it
+    def mb1SPrediction(self, c_n_params):
         mb = 0
         M1 = self.Moment(c_n_params, 1)
         M2 = self.Moment(c_n_params, 2)
@@ -185,6 +201,7 @@ class Meas:
         p = -18 * Lambda2 - 25 * M1 * M1 + 36 * M2 - 22 * M1 * mB + 11 * mB * mB
         q = 5 * M1 * (27 * Lambda2 + 25 * M1 * M1 - 54 * M2) - 3 * (45 * Lambda2 - 55 * M1 * M1 + 72 * M2) * mB + 51 * M1 * mB * mB - 17 * mB * mB * mB + 162 * (M3 + Rho2)
         u = np.cbrt((-q + np.sqrt(q * q + p * p * p)))
+        #print("M1 = %f, M2 = %f, M3 = %f" % (M1,M2,M3))
         mb = 1. / 6. * (5 * (mB - M1) - p / u + u)
 
         return mb
@@ -227,7 +244,7 @@ class Meas:
         for key in settings.KeyOrder:
             size += np.size(self.exp_data[key]['dBFs'])-self.fit_config[key]['min']
 
-        Cov_glob = np.zeros((size,size)) #FIXME Oddly specific
+        Cov_glob = np.zeros((size,size)) 
 
         ntot = 0
 
@@ -258,6 +275,10 @@ class Meas:
         self.M2 = self.Moment(cn,2)
         self.M3 = self.Moment(cn,3)
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
+        
+        # New line to check global covariance matrix, can be deleted
+        self.glob_cov = Cov_glob
+        
         return Chisq
     
     def Chisq_no_sub(self, pars):
@@ -271,7 +292,7 @@ class Meas:
         for key in settings.KeyOrder:
             size += np.size(self.exp_data[key]['dBFs'])-self.fit_config[key]['min']
 
-        Cov_glob = np.zeros((size,size)) #FIXME Oddly specific
+        Cov_glob = np.zeros((size,size)) 
 
         ntot = 0
 
@@ -302,4 +323,8 @@ class Meas:
         self.M2 = self.Moment(cn,2)
         self.M3 = self.Moment(cn,3)
         self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
+
+        # New line to check global covariance matrix, can be deleted
+        self.glob_cov = Cov_glob
+
         return Chisq

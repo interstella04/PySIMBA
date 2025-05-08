@@ -258,15 +258,16 @@ class Plot:
 h = Plot()
 
 
-'''
+
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem"]#, "belle"]
 #data_tag_list = ["belle"]
-data_tag_list = ["babar_sem"]
+#data_tag_list = ["babar_sem"]
 
 for i in data_tag_list:
     h.compare(i)
-'''
-h.just_one('babar_sem')
+    print("II")
+
+#h.just_one('babar_sem')
 
 #FIXME: Binned root histogram data has less bins than the experimental and prediction data, so I can't multiply it with the Smear-Matrix
 
