@@ -140,10 +140,10 @@ class Plot:
 
     
     def compare(self, key, div_bin = False):
-        fig, axs = plt.subplots(6, 4, figsize=(24, 24), sharex=True)
+        fig, axs = plt.subplots(6, 3, figsize=(24, 24), sharex=True)
 
         start = 0
-        if key == 'babar_sem': start = 2
+        if key == 'babar_incl': start = 2
         elif key == 'belle': start = 4
 
         for ax in axs:
@@ -196,10 +196,10 @@ class Plot:
                 i.set_title("")
                 i.grid(axis="y", linestyle="--", alpha=0.6)
 
-        axs[0,0].set_title("$\\mathrm{4 Parameter}$", fontsize = 30)
-        axs[0,1].set_title("$\\mathrm{5 Parameter}$", fontsize = 30)
-        axs[0,2].set_title("$\\mathrm{6 Parameter}$", fontsize = 30)
-        axs[0,3].set_title("$\\mathrm{7 Parameter}$", fontsize = 30)
+        axs[0,0].set_title("$\\mathrm{3 Parameter}$", fontsize = 30)
+        axs[0,1].set_title("$\\mathrm{4 Parameter}$", fontsize = 30)
+        axs[0,2].set_title("$\\mathrm{5 Parameter}$", fontsize = 30)
+        axs[0,3].set_title("$\\mathrm{6 Parameter}$", fontsize = 30)
 
         fig.suptitle("$\\mathrm{%s}$" % self.measurement.exp_data[key]['Label'], fontsize=30, fontweight="bold")
 

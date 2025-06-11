@@ -14,7 +14,7 @@ class settings:
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
     SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
     FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
-    KeyOrder = ["belle", "babar_hadtag", "babar_sem", "babar_incl"]
+    KeyOrder = ["belle", "babar_hadtag", "babar_incl"] # killed babar_sem
     BasisExpansion = '0575'
     SubLeadBasisExpansion = '10575' # ATTENTION, is used in SubLeadingPred
 
@@ -61,6 +61,8 @@ class Meas:
 
         # New line to check global covariance matrix, can be deleted
         self.glob_cov = [0]
+        self.glob_meas = [0]
+        self.glob_pred = [0]
 
         return
 
@@ -128,11 +130,11 @@ class Meas:
             for j in range(np.size(c_n_params)):
                 for k in range(np.size(c_n_params)):
                     value += self.theory_expx3[key][mid]['la'+end]['Values'][i][j][k] * c_n_params[j] * c_n_params[k] 
-                    try:
-                        value *= norm
-                    except RuntimeWarning:
-                        print('Value:' + value)
-                        print('Norm:' + norm)
+            try:
+                value *= norm
+            except RuntimeWarning:
+                print('Value:' + value)
+                print('Norm:' + norm)
             pred = np.append(pred, value)
         return pred 
 
@@ -145,10 +147,10 @@ class Meas:
             for j in range(np.size(c_n_params)):
                 try:
                     value +=  self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
-                    value *= norm
                 except IndexError:
                     print('Something is awfully wrong here')
                     break
+            value *= norm
             pred = np.append(pred, value)
 
         return pred
@@ -244,7 +246,8 @@ class Meas:
         for key in settings.KeyOrder:
             size += np.size(self.exp_data[key]['dBFs'])-self.fit_config[key]['min']
 
-        Cov_glob = np.zeros((size,size)) 
+        Cov_glob = np.zeros((size,size))
+
 
         ntot = 0
 
@@ -253,7 +256,6 @@ class Meas:
             nbins = np.size(self.exp_data[key]['dBFs'])
             min = self.fit_config[key]['min']
             max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
-
             full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm, with_sub = True) # My BsgPrediction Function is for one data set
             pred =  full_pred[min:max+1]
             meas = self.exp_data[key]['dBFs'][min:max+1]
@@ -263,11 +265,15 @@ class Meas:
             Tools.set_sub(Cov_glob, ntot, ntot, Cov)
             ntot += max-min
         
-        Cov_glob = np.linalg.inv(Cov_glob) 
+        Cov_glob = np.array(np.linalg.inv(Cov_glob)) 
 
 
+        #np.set_printoptions(precision=17)
+        #meas_glob = np.ones(52)
         #Calculate Chi^2
-        Chisq = np.dot(meas_glob-pred_glob, np.matmul(Cov_glob, meas_glob-pred_glob)) # NOTE: Correct like this ?
+        Dummy = np.dot((meas_glob - pred_glob).transpose(), Cov_glob)
+        #print(Cov_glob)
+        Chisq = np.dot(Dummy, (meas_glob - pred_glob))
 
         self.chisq = Chisq
         self.mb = self.mb1SPrediction(cn)
@@ -278,6 +284,8 @@ class Meas:
         
         # New line to check global covariance matrix, can be deleted
         self.glob_cov = Cov_glob
+        self.glob_meas = meas_glob
+        self.glob_pred = pred_glob
         
         return Chisq
     
