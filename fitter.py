@@ -28,7 +28,7 @@ class Fitter:
         m.tol = 1000 #sets EDM_max = 0.1
         
         m.errordef = 0.0001
-        m.simplex()
+        #m.simplex()
         m.tol = 500 # sets EDM_max = 0.0001
         m.migrad(ncall= 100000, use_simplex= True)
         m.hesse()

@@ -14,17 +14,18 @@ ResultPath: result/
 
 # Order of the used theory (NNLLNNLO,NLLNLO are options)
 TheoryOrder: ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
+SubLeadTheoryOrder: 'SSF27_10575'
 
 # Tag of used Theory
-TheoryTag: expx3
-SubleadingTheoryTag: SSF27
+TheoryTag: 'expx3'
+SubleadingTheoryTag: 'SSF27'
 
 # Path to the dictionaries containing the used theory
 TheoryPath: theory/theory_dictionary_expx3
 SubleadingTheoryPath: theory/theory_dictionary_SSF27
 
 # Path for constraints and moments
-TheoryMoments: theory/Fmn_moments
+TheoryMomentsPath: theory/Fmn_moments
 
 ######################################################
 # Measurement Configuration
@@ -41,8 +42,6 @@ KeyOrder: ["belle", "babar_hadtag", "babar_incl"]
 Minimum:
   belle: 6
   babar_incl: 3
-  babar_hadtag: 0
-  babar_sem: 0
 
 # Scale i.e. for Smearing Matrice
 Scale:
@@ -53,11 +52,11 @@ Scale:
 ######################################################
 
 # Fit expansion 
-BasisExpansion: 0575
-SubLeadBasisExpansion: 10575
+BasisExpansion: '0575'
+SubLeadBasisExpansion: '10575'
 
 # Fit Variables, Naming and amount of Fitting Parameters
-FitVars: [norm, a1, a2]
+FitVars: ["norm", "a1", "a2"]
 
 ## Start values
 StartValues: [0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0]
@@ -66,7 +65,7 @@ StartValues: [0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0]
 # Theory Input Values 
 ######################################################
 
-constants:
+Constants:
   # Constants for mB, Lambda2, rho2
   mB: 5.279
   La2: 0.12

@@ -7,44 +7,44 @@ import yaml
 @dataclass
 class settings:
 
-    SubLeadCoefficients = [0.] 
-    TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
-    SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
-    FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
-    KeyOrder = ["belle", "babar_hadtag", "babar_incl"] # killed babar_sem 
-    BasisExpansion = '0575'
-    SubLeadBasisExpansion = '10575' # ATTENTION, is used in SubLeadingPred
+    with open("settings.yml", "r") as f: 
+        config = yaml.safe_load(f)
+
+    SubLeadCoefficients = config["SubLeadCoefficients"]
+    TheoryOrder = config["TheoryOrder"]
+    SubLeadTheoryOrder = config["SubLeadTheoryOrder"]
+    FitVars = config["FitVars"]
+    KeyOrder = config["KeyOrder"]
+    BasisExpansion = config["BasisExpansion"]
+    SubLeadBasisExpansion = config["SubLeadBasisExpansion"] # ATTENTION, is used in SubLeadingPred
     
     # Constants from fit.config
-    rho2: float = -0.05
-    mB  : float = 5.279
-    La2 : float = 0.12
-    N0  : float = 794.0705566209606
-    VtbVts: float = 0.04129300965
-    C2C7: float = -2.109974309809888
-    C2C2: float = 1.1129978970144285
-    C8C7: float = 0.2760118962325344
-    C8C8: float = 0.019045641715469835
-    C2C8: float = -0.29118900512628015
+    rho2: float = config["Constants"]["rho2"]
+    mB  : float = config["Constants"]["mB"]
+    La2 : float = config["Constants"]["La2"]
+    N0  : float = config["Constants"]["N0"]
+    VtbVts: float = config["Constants"]["VtbVts"]
+    C2C7: float = config["Constants"]["C2C7"]
+    C2C2: float = config["Constants"]["C2C2"]
+    C8C7: float = config["Constants"]["C8C7"]
+    C8C8: float = config["Constants"]["C8C8"]
+    C2C8: float = config["Constants"]["C2C8"]
 
 class Meas:
     def __init__(self):
 
         #Theory Dictionaries
-        self.theory_expx3 = Tools.pickle_to_dict('theory/theory_dictionary_expx3')
-        self.theory_SSF = Tools.pickle_to_dict('theory/theory_dictionary_SSF27')
+        self.Theory = Tools.pickle_to_dict(settings.config["TheoryPath"])
+        self.SubleadTheory = Tools.pickle_to_dict(settings.config["SubleadingTheoryPath"])
 
         #Dictionary with experimental data
-        self.exp_data = Tools.pickle_to_dict('data/exp_data')
-
-        #Dictionary with fit Configurations specific on dataset
-        self.fit_config = Tools.pickle_to_dict('fit/fit_config')
+        self.exp_data = Tools.pickle_to_dict(settings.config["MeasurementPath"])
         
         #Histogram Dictionary from Root Data
-        self.hist_nom = Tools.pickle_to_dict("theory/hist_nom")
+        self.hist_nom = Tools.pickle_to_dict("theory/hist_nom") #TODO: Ihn will ich nicht mehr als Meas Objekt haben, muss als Plot Objekt chillen
 
         #Moments Dictionary
-        self.Fmn_moments = Tools.pickle_to_dict("theory/Fmn_moments")
+        self.Fmn_moments = Tools.pickle_to_dict(settings.config["TheoryMomentsPath"])
 
         # Variables that will get a value in the process
         self.chisq: float
@@ -116,7 +116,7 @@ class Meas:
             value = 0
             for j in range(np.size(c_n_params)):
                 for k in range(np.size(c_n_params)):
-                    value += self.theory_expx3[key][mid]['la'+end]['Values'][i][j][k] * c_n_params[j] * c_n_params[k] 
+                    value += self.Theory[key][mid]['la'+end]['Values'][i][j][k] * c_n_params[j] * c_n_params[k] 
             try:
                 value *= norm
             except RuntimeWarning:
@@ -133,7 +133,7 @@ class Meas:
             value = 0
             for j in range(np.size(c_n_params)):
                 try:
-                    value +=  self.theory_SSF[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
+                    value +=  self.SubleadTheory[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
                 except IndexError:
                     print('Something is awfully wrong here')
                     break
@@ -150,7 +150,7 @@ class Meas:
         Rho2 = settings.rho2
         mB = settings.mB
         mb = self.mb1SPrediction(c_n_params)
-        la = self.theory_SSF['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda']#TODO: Debends on key babar_hadtag, doesn't bother but not pretty
+        la = self.SubleadTheory['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda']#TODO: Debends on key babar_hadtag, doesn't bother but not pretty
         Lambda2 = settings.La2
 
 
@@ -170,7 +170,7 @@ class Meas:
         if (order > np.size(self.Fmn_moments['expx3']['Moment'])): print('Meas.Moment(): requested an order of moment, that cannot be calculated')
         value = 0
 
-        prepared_moment = np.pow(self.theory_SSF['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda'], order) * self.Fmn_moments['expx3']['Values'][order] #TODO: Debends on key babar_hadtag, doesn't bother but not pretty
+        prepared_moment = np.pow(self.SubleadTheory['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda'], order) * self.Fmn_moments['expx3']['Values'][order] #TODO: Debends on key babar_hadtag, doesn't bother but not pretty
         for i in range(np.size(c_n_params)):
             for j in range(np.size(c_n_params)):
                 value += prepared_moment[i][j] * c_n_params[i] * c_n_params[j]
@@ -230,8 +230,14 @@ class Meas:
         meas_glob = np.array([])
 
         size = 0
+        minimum = {}
         for key in settings.KeyOrder:
-            size += np.size(self.exp_data[key]['dBFs'])-self.fit_config[key]['min']
+            
+            if key in settings.config["Minimum"]:
+                minimum[key] = settings.config["Minimum"][key]
+            else: minimum[key] = 0
+
+            size += np.size(self.exp_data[key]['dBFs'])-minimum[key]
 
         Cov_glob = np.zeros((size,size))
 
@@ -240,7 +246,7 @@ class Meas:
         for key in settings.KeyOrder:
 
             nbins = np.size(self.exp_data[key]['dBFs'])
-            min = self.fit_config[key]['min']
+            min = minimum[key]
             max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
             full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm)
             pred =  full_pred[min:max+1]

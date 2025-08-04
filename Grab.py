@@ -216,16 +216,7 @@ class Grab:
             file.close()
         
         return Fmn_moments
-    
-
-    def create_fit_config(min = 0):
-        dictio = {
-            'min': min,
-                  }
-        return dictio
             
-
-
 
 g = Grab()
 
@@ -285,13 +276,3 @@ hist_nom = {
     }
 
 Tools.store_in_pickle(hist_nom, 'histogram/hist_nom')
-
-fit_config = {
-    "babar_hadtag": Grab.create_fit_config(),
-    "babar_incl":   Grab.create_fit_config(3),
-    "babar_sem":    Grab.create_fit_config(),
-    "belle":        Grab.create_fit_config(6)
-    }
-
-Tools.store_in_pickle(fit_config, 'fit/fit_config')
-

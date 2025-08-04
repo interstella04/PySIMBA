@@ -5,6 +5,9 @@ from Meas import settings
 from matplotlib import rc
 from Tools import Tools
 
+
+#NOTE: MEASUREMENT is now exp_data, so this is not working anymore
+
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 plt.rcParams.update({'font.size': 13})

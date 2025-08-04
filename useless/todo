@@ -2,7 +2,7 @@
     - everything in settings
     - an output path
     - path were initial data lays
-- comment Meas, Plot and Tools
+- comment Meas, Plot and Tools and Grab
 - think about naming variables differently
 - Input smoothly, how should someone use the Code, should I write a 'main'? 
 - Plot class must be prettier and accessible
