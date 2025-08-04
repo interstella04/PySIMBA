@@ -1,24 +1,19 @@
 import numpy as np
-import pickle
-import pandas as pd
 from Tools import Tools
-import traceback
 from dataclasses import dataclass
-from iminuit import Minuit, cost
+
+import yaml
 
 @dataclass
 class settings:
-    la: list
-    cn: list
-    SubLeadCoefficients = [0.] # Don't really know, because in fit.config it is only SSF27_1055 and SSF27_2055 both are zero for d2
+
+    SubLeadCoefficients = [0.] 
     TheoryOrder = ['NNLLNNLO', 'NS22NNLO', 'NS27NNLO', 'NS28NNLO', 'NS78NNLO', 'NS88NNLO']
     SubLeadTheoryOrder = 'SSF27_10575' # What is it? 
     FitVars = ['norm', 'a1', 'a2'] #List of Strings according to fit.config
-    KeyOrder = ["belle", "babar_hadtag", "babar_incl"] # killed babar_sem
+    KeyOrder = ["belle", "babar_hadtag", "babar_incl"] # killed babar_sem 
     BasisExpansion = '0575'
     SubLeadBasisExpansion = '10575' # ATTENTION, is used in SubLeadingPred
-
-    DOMomentConstraints: bool #Should the Constraints be in the calculation or not
     
     # Constants from fit.config
     rho2: float = -0.05
@@ -59,29 +54,24 @@ class Meas:
         self.M3: float
         self.la: float
 
-        # New line to check global covariance matrix, can be deleted
+        # New lines to check global covariance matrix and other matrices, can be deleted TODO
         self.glob_cov = [0]
         self.glob_meas = [0]
         self.glob_pred = [0]
 
         return
 
-    def BsgPrediction_full(self, key: str, end: str, c_n_params, norm, with_sub = True):
+    def BsgPrediction_full(self, key: str, end: str, c_n_params, norm):
 
         pred = np.zeros(np.size(self.exp_data[key]['dBFs']))
-        self.mb = self.mb1SPrediction(c_n_params) #HERE mb should change values in the Meas object
+        self.mb = self.mb1SPrediction(c_n_params)
 
         for order in range(np.size(settings.TheoryOrder)):
-            try:
-                pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
-            except RuntimeWarning:
-                print('BsgPred:'+self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ))
-                print('TheoPre:'+self.TheoryPrefactor(settings.TheoryOrder[order], norm))
-                print('CurrPred:'+ pred)
+            pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
 
-        if with_sub == True:
-            for order in range(np.size(settings.SubLeadTheoryOrder)):
-                pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder, norm)
+        
+        for order in range(np.size(settings.SubLeadTheoryOrder)):
+            pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder, norm)
 
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
@@ -113,10 +103,7 @@ class Meas:
             value *= np.power(settings.VtbVts * self.mb, 2.0)
         elif ('78'  in TheoryOrder):
             value *= settings.C8C7
-            try:
-                value /= np.sqrt(norm)
-            except RuntimeWarning:
-                print('Norm for 78%s :' % (TheoryOrder) + norm)
+            value /= np.sqrt(norm)
             value *= settings.VtbVts * self.mb
         
         return value
@@ -248,7 +235,6 @@ class Meas:
 
         Cov_glob = np.zeros((size,size))
 
-
         ntot = 0
 
         for key in settings.KeyOrder:
@@ -256,7 +242,7 @@ class Meas:
             nbins = np.size(self.exp_data[key]['dBFs'])
             min = self.fit_config[key]['min']
             max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
-            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm, with_sub = True) # My BsgPrediction Function is for one data set
+            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm)
             pred =  full_pred[min:max+1]
             meas = self.exp_data[key]['dBFs'][min:max+1]
             Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
@@ -266,13 +252,12 @@ class Meas:
             ntot += max-min
         
         Cov_glob = np.array(np.linalg.inv(Cov_glob)) 
+        
+        Cov_glob = Tools.make_positive_definite(Cov_glob, eps = 0) # Makes Matrice positive definite
 
 
-        #np.set_printoptions(precision=17)
-        #meas_glob = np.ones(52)
         #Calculate Chi^2
         Dummy = np.dot((meas_glob - pred_glob).transpose(), Cov_glob)
-        #print(Cov_glob)
         Chisq = np.dot(Dummy, (meas_glob - pred_glob))
 
         self.chisq = Chisq
@@ -287,52 +272,4 @@ class Meas:
         self.glob_meas = meas_glob
         self.glob_pred = pred_glob
         
-        return Chisq
-    
-    def Chisq_no_sub(self, pars):
-        cn = Meas.ConvertPars(pars)
-        norm = pars[0]
-
-        pred_glob = np.array([])
-        meas_glob = np.array([])
-
-        size = 0
-        for key in settings.KeyOrder:
-            size += np.size(self.exp_data[key]['dBFs'])-self.fit_config[key]['min']
-
-        Cov_glob = np.zeros((size,size)) 
-
-        ntot = 0
-
-        for key in settings.KeyOrder:
-
-            nbins = np.size(self.exp_data[key]['dBFs'])
-            min = self.fit_config[key]['min']
-            max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
-
-            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm, with_sub = False) # My BsgPrediction Function is for one data set
-            pred =  full_pred[min:max+1]
-            meas = self.exp_data[key]['dBFs'][min:max+1]
-            Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
-            pred_glob = np.append(pred_glob, pred)
-            meas_glob = np.append(meas_glob, meas)
-            Tools.set_sub(Cov_glob, ntot, ntot, Cov)
-            ntot += max-min
-        
-        Cov_glob = np.linalg.inv(Cov_glob) 
-
-
-        #Calculate Chi^2
-        Chisq = np.dot(meas_glob-pred_glob, np.matmul(Cov_glob, meas_glob-pred_glob)) # NOTE: Correct like this ?
-
-        self.chisq = Chisq
-        self.mb = self.mb1SPrediction(cn)
-        self.M1 = self.Moment(cn,1)
-        self.M2 = self.Moment(cn,2)
-        self.M3 = self.Moment(cn,3)
-        self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
-
-        # New line to check global covariance matrix, can be deleted
-        self.glob_cov = Cov_glob
-
         return Chisq

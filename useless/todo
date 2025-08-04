@@ -1,0 +1,12 @@
+- Make config File, get settings from config file, also min, max for data should be in it
+    - everything in settings
+    - an output path
+    - path were initial data lays
+- comment Meas, Plot and Tools
+- think about naming variables differently
+- Input smoothly, how should someone use the Code, should I write a 'main'? 
+- Plot class must be prettier and accessible
+- skip through all TODOS in my Code
+
+
+- add other subleading theory, make it accessible through Tag in config file

@@ -88,7 +88,7 @@ class Plot:
     
 
     
-    def check_pred(self, key, end, fig, ax,an_pars, div_bin = False, box_opt = False, with_sub = True):
+    def check_pred(self, key, end, fig, ax,an_pars, div_bin = False, box_opt = False):
         
         x,dx = Plot.simple_plot(self, key, fig, ax, div_bin, box_opt)
 
@@ -98,7 +98,9 @@ class Plot:
             
 
 
-        y = self.measurement.BsgPrediction_full(key,end, cn, norm, with_sub= with_sub)
+        y = self.measurement.BsgPrediction_full(key,end, cn, norm)
+
+        if key == 'belle': y*= 1/1000
 
         y = np.matmul(self.measurement.exp_data[key]['Smear'],y)
 
@@ -130,64 +132,54 @@ class Plot:
             plt.savefig('theory/'+key+'_check_pred')
         return
     
-    def calc_pred(self, key, an, with_sub = True):
+    def calc_pred(self, key, an):
         cn = Meas.ConvertPars(an)
         norm = an[0]
-        pred  = self.measurement.BsgPrediction_full(key,settings.BasisExpansion, cn, norm, with_sub= with_sub)
+        pred  = self.measurement.BsgPrediction_full(key,settings.BasisExpansion, cn, norm)
+        #if key == 'belle': pred*= 1/1000
 
         return pred
 
 
     
     def compare(self, key, div_bin = False):
-        fig, axs = plt.subplots(6, 3, figsize=(24, 24), sharex=True)
+        fig, axs = plt.subplots(2, 5, figsize=(42*0.75, 20*0.75), sharex=True)
 
         start = 0
-        if key == 'babar_incl': start = 2
-        elif key == 'belle': start = 4
+        if key == 'babar_incl': start = 1
 
         for ax in axs:
             for i in ax:
                 i.set_ylabel("")
 
-        for i in range(start, 6, 1):
-            for j in range(0, 4, 1):
+        for i in range(start, 2, 1):
+            for j in range(0, 5, 1):
 
-                if i%2 == 0:
-                    sublead_or_not = 'subleading'
-                    with_sub = True
-                    axs[i,0].set_ylabel('with '+sublead_or_not, fontsize = 20)
-                else:
-                    sublead_or_not = 'leading'
-                    with_sub = False
-                    axs[i,0].set_ylabel('just '+sublead_or_not, fontsize = 20)
+                axs[i,0].set_ylabel('with %d measurements ' % (i+2), fontsize = 20)
 
-                if i == 0 or i == 1: number_meas = 2
-                elif i == 2 or i == 3: number_meas = 3
-                else: number_meas = 4
-                
-
+                number_meas = i+2
+            
                 #Plots experimental Data and Prediction
-                self.check_pred(key, settings.BasisExpansion, fig,axs[i,j],self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'], box_opt=False, div_bin= div_bin, with_sub=with_sub)
+                self.check_pred(key, settings.BasisExpansion, fig,axs[i,j],self.collected_fits['%d' % (number_meas)]['results']['%d' % (j+3)]['an'], box_opt=False, div_bin= div_bin)
                 #Plots Histogram Data from Root file
                 Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], self.measurement.hist_nom[key]['Values'], fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, legend_label= 'Fit Goal')
                 #Plots difference between previous fit and my fit
-                Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.hist_nom[key]['Values']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='blue', legend_label= '|Fit Goal - Pred. Data|')
-                #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.exp_data[key]['dBFs']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)][sublead_or_not]['%d' % (j+4)]['an'],with_sub=with_sub )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='hotpink', legend_label = '|Fit Goal - Exp. Data|')
+                #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.hist_nom[key]['Values']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)]['results']['%d' % (j+3)]['an'])), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='blue', legend_label= '|Fit Goal - Pred. Data|')
+                #Plot.plot_histogram(self, self.measurement.hist_nom[key]['Bins'], abs(self.measurement.exp_data[key]['dBFs']-self.calc_pred(key,self.collected_fits['%d' % (number_meas)]['results']['%d' % (j+3)]['an'] )), fig, axs[i,j], self.measurement.hist_nom[key]['Label'], div_bin=div_bin, color='hotpink', legend_label = '|Fit Goal - Exp. Data|')
 
-        handles, labels = axs[5,3].get_legend_handles_labels()  # Nur einmal Labels abrufen  
+        handles, labels = axs[1,4].get_legend_handles_labels()  # Nur einmal Labels abrufen  
         fig.legend(handles, labels, loc="upper left", ncol=2, fontsize=20)
 
-        fig.text(0.02, 0.8, "$\\mathrm{2 Measurements}$", va="center", ha="left", fontsize=30, fontweight="bold", rotation=90)
-        fig.text(0.02, 0.5, "$\\mathrm{3 Measurements}$", va="center", ha="left", fontsize=30, fontweight="bold", rotation=90)
-        fig.text(0.02, 0.2, "$\\mathrm{4 Measurements}$", va="center", ha="left", fontsize=30, fontweight="bold", rotation=90)
+        #fig.text(0.02, 0.8, "$\\mathrm{2 Measurements}$", va="center", ha="left", fontsize=30, fontweight="bold", rotation=90)
+        #fig.text(0.02, 0.5, "$\\mathrm{3 Measurements}$", va="center", ha="left", fontsize=30, fontweight="bold", rotation=90)
+        #fig.text(0.02, 0.2, "$\\mathrm{4 Measurements}$", va="center", ha="left", fontsize=30, fontweight="bold", rotation=90)
 
-        target_ax = axs[5, 2]
+        #target_ax = axs[5, 2]
 
         # Grünen Rahmen setzen (spine = Rand der Achse)
-        for spine in target_ax.spines.values():
-            spine.set_edgecolor("green")
-            spine.set_linewidth(3)
+        #for spine in target_ax.spines.values():
+        #    spine.set_edgecolor("green")
+        #    spine.set_linewidth(3)
 
         plt.tight_layout(rect=[0.05, 0, 1, 0.95])
 
@@ -200,6 +192,7 @@ class Plot:
         axs[0,1].set_title("$\\mathrm{4 Parameter}$", fontsize = 30)
         axs[0,2].set_title("$\\mathrm{5 Parameter}$", fontsize = 30)
         axs[0,3].set_title("$\\mathrm{6 Parameter}$", fontsize = 30)
+        axs[0,4].set_title("$\\mathrm{7 Parameter}$", fontsize = 30)
 
         fig.suptitle("$\\mathrm{%s}$" % self.measurement.exp_data[key]['Label'], fontsize=30, fontweight="bold")
 
@@ -257,10 +250,8 @@ class Plot:
 
 h = Plot()
 
-
-
-data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem"]#, "belle"]
-#data_tag_list = ["belle"]
+#data_tag_list = ["babar_hadtag", "babar_incl"]
+data_tag_list = ["belle"]
 #data_tag_list = ["babar_sem"]
 
 for i in data_tag_list:
