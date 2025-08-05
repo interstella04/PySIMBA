@@ -5,9 +5,11 @@ from dataclasses import dataclass
 from iminuit import Minuit, cost
 import iminuit
 from Meas import settings
-from Meas import Meas
+from Meas import Theory
 
 class Fitter:
+     def __init__(self):
+         pass
     
     #start_pars: Which start parameters will be used
     #number_pars: How many parameters will be fitted, so how many of start_pars will be used
@@ -19,7 +21,7 @@ class Fitter:
         sets.KeyOrder = sets.KeyOrder[0:no_meas]
         print('Fit for: '+ str(sets.KeyOrder))
 
-        mes = Meas()
+        mes = Theory()
 
         m = Minuit(mes.Chisq, start_pars[0:number_pars])
         value = mes.Chisq(np.array(m.values))
@@ -33,7 +35,6 @@ class Fitter:
         m.migrad(ncall= 100000, use_simplex= True)
         m.hesse()
         
-
         chisq = mes.chisq
         mb = mes.mb
 
@@ -45,7 +46,7 @@ class Fitter:
         return m, mes, chisq, mb
      
      #Calculates fits with several numbers of fitting Parameters for a specific number of measurements
-     def collect_fit_data(start_pars, start_numb_pars, end_numb_pars, no_meas = 2, with_minos = True):
+     def CollectFitData(start_pars, start_numb_pars, end_numb_pars, no_meas = 2, with_minos = True):
         results = {}
         for i in range(start_numb_pars, end_numb_pars+1, 1):
             temp_dict = {}
@@ -67,9 +68,9 @@ class Fitter:
 start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
 
 collected_fits ={
-    #'4': Fitter.collect_fit_data(start_pars, 3,7,no_meas = 4, with_minos = True),
-    '3': Fitter.collect_fit_data(start_pars, 3,7,no_meas = 3, with_minos=True),
-    '2': Fitter.collect_fit_data(start_pars, 3,7,no_meas = 2, with_minos=True)
+    #'4': Fitter.CollectFitData(start_pars, 3,7,no_meas = 4, with_minos = True),
+    '3': Fitter.CollectFitData(start_pars, 3,7,no_meas = 3, with_minos=True),
+    '2': Fitter.CollectFitData(start_pars, 3,7,no_meas = 2, with_minos=True)
 }
 
 

@@ -1,24 +1,28 @@
 import numpy as np
+import numpy.typing as npt
+
 from Tools import Tools
 from dataclasses import dataclass
 
+# For config File
 import yaml
 
 @dataclass
 class settings:
 
+    # Open the yaml (config) file and store the information in config (dictionary)
     with open("settings.yml", "r") as f: 
         config = yaml.safe_load(f)
 
+    # Read out Information of config
     SubLeadCoefficients = config["SubLeadCoefficients"]
     TheoryOrder = config["TheoryOrder"]
     SubLeadTheoryOrder = config["SubLeadTheoryOrder"]
     FitVars = config["FitVars"]
     KeyOrder = config["KeyOrder"]
     BasisExpansion = config["BasisExpansion"]
-    SubLeadBasisExpansion = config["SubLeadBasisExpansion"] # ATTENTION, is used in SubLeadingPred
+    SubLeadBasisExpansion = config["SubLeadBasisExpansion"]
     
-    # Constants from fit.config
     rho2: float = config["Constants"]["rho2"]
     mB  : float = config["Constants"]["mB"]
     La2 : float = config["Constants"]["La2"]
@@ -30,21 +34,28 @@ class settings:
     C8C8: float = config["Constants"]["C8C8"]
     C2C8: float = config["Constants"]["C2C8"]
 
-class Meas:
+
+class Theory:
+
+    # Define types
+    type Vector = list[float]
+    type npVector = npt.NDArray[np.float64]
+
     def __init__(self):
 
+        # Reading out the dictionaries from pickles at the paths given in the yaml (config)
         #Theory Dictionaries
-        self.Theory = Tools.pickle_to_dict(settings.config["TheoryPath"])
-        self.SubleadTheory = Tools.pickle_to_dict(settings.config["SubleadingTheoryPath"])
+        self.Theory = Tools.PickleToDict(settings.config["TheoryPath"])
+        self.SubleadTheory = Tools.PickleToDict(settings.config["SubleadingTheoryPath"])
 
         #Dictionary with experimental data
-        self.exp_data = Tools.pickle_to_dict(settings.config["MeasurementPath"])
+        self.exp_data = Tools.PickleToDict(settings.config["MeasurementPath"])
         
         #Histogram Dictionary from Root Data
-        self.hist_nom = Tools.pickle_to_dict("theory/hist_nom") #TODO: Ihn will ich nicht mehr als Meas Objekt haben, muss als Plot Objekt chillen
+        self.hist_nom = Tools.PickleToDict("theory/hist_nom") #TODO: Ihn will ich nicht mehr als Meas Objekt haben, muss als Plot Objekt chillen
 
         #Moments Dictionary
-        self.Fmn_moments = Tools.pickle_to_dict(settings.config["TheoryMomentsPath"])
+        self.Fmn_moments = Tools.PickleToDict(settings.config["TheoryMomentsPath"])
 
         # Variables that will get a value in the process
         self.chisq: float
@@ -54,32 +65,30 @@ class Meas:
         self.M3: float
         self.la: float
 
-        # New lines to check global covariance matrix and other matrices, can be deleted TODO
-        self.glob_cov = [0]
-        self.glob_meas = [0]
-        self.glob_pred = [0]
-
         return
-
-    def BsgPrediction_full(self, key: str, end: str, c_n_params, norm):
+    
+    # Calculates the BsgPrediction for every given Theory in TheoryOrder and the SubLeadingBsgPrediction for every given SubLeadTheoryOrder. Results into the final Prediction with leading and subleading Theory combined
+    def FullBsgPrediction(self, key: str, end: str, c_n_params: npVector, norm: float) -> npVector:
 
         pred = np.zeros(np.size(self.exp_data[key]['dBFs']))
         self.mb = self.mb1SPrediction(c_n_params)
 
+        # Full leading prediction
         for order in range(np.size(settings.TheoryOrder)):
             pred += self.BsgPrediction(key, settings.TheoryOrder[order], end, c_n_params, norm ) * self.TheoryPrefactor(settings.TheoryOrder[order], norm)
 
-        
+        # Full subleading prediction
         for order in range(np.size(settings.SubLeadTheoryOrder)):
             pred += self.BsgSubLeadingPrediction(key, self.SubLeadPars(c_n_params, settings.SubLeadCoefficients[order]), norm) * self.TheoryPrefactor(settings.SubLeadTheoryOrder, norm)
 
+        # Multiply with Smearing-Matrice
         pred = np.matmul(self.exp_data[key]['Smear'],pred) 
 
         return pred
         
     
     # Prefactor for leading and subleading theory
-    def TheoryPrefactor(self, TheoryOrder:str, norm:float):
+    def TheoryPrefactor(self, TheoryOrder: str, norm: float) -> float:
 
         value = settings.N0
 
@@ -110,33 +119,26 @@ class Meas:
 
 
     # Returns a prediction array for one specific experiment with one specific lambda
-    def BsgPrediction(self, key:str, mid:str, end:str, c_n_params, norm):      
+    def BsgPrediction(self, key: str, mid: str, end: str, c_n_params: npVector, norm: float) -> npVector:      
         pred = np.array([])
         for i in range(np.size(self.exp_data[key]['dBFs'])):
             value = 0
             for j in range(np.size(c_n_params)):
                 for k in range(np.size(c_n_params)):
                     value += self.Theory[key][mid]['la'+end]['Values'][i][j][k] * c_n_params[j] * c_n_params[k] 
-            try:
-                value *= norm
-            except RuntimeWarning:
-                print('Value:' + value)
-                print('Norm:' + norm)
+            
+            value *= norm
             pred = np.append(pred, value)
         return pred 
 
 
-    # mid is here the SSF27 Files --> SubLeadingTheoryOrder, called in BsgPrediction_full()
-    def BsgSubLeadingPrediction(self, key:str, c_n_params, norm):
+    # Returns a the subleading prediction for a given measurement
+    def BsgSubLeadingPrediction(self, key:str, c_n_params: npVector, norm: float) -> npVector:
         pred = np.array([])
         for i in range(np.size(self.exp_data[key]['dBFs'])):
             value = 0
             for j in range(np.size(c_n_params)):
-                try:
-                    value +=  self.SubleadTheory[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
-                except IndexError:
-                    print('Something is awfully wrong here')
-                    break
+                value +=  self.SubleadTheory[key]['la'+ settings.SubLeadBasisExpansion]['Values'][i][0][j] * c_n_params[j]
             value *= norm
             pred = np.append(pred, value)
 
@@ -144,13 +146,12 @@ class Meas:
     
     # puts Zoltan's SF into the prediction
     # converts c_n's into subleading coefficients
-
-    def SubLeadPars(self, c_n_params, d2: float):
+    def SubLeadPars(self, c_n_params: npVector, d2: float) -> npVector:
         
         Rho2 = settings.rho2
         mB = settings.mB
         mb = self.mb1SPrediction(c_n_params)
-        la = self.SubleadTheory['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda']#TODO: Debends on key babar_hadtag, doesn't bother but not pretty
+        la = Tools.StrToLambda(settings.SubLeadBasisExpansion)
         Lambda2 = settings.La2
 
 
@@ -159,25 +160,26 @@ class Meas:
         elif('SSF27_2' in settings.SubLeadTheoryOrder):
             x = (0.4722982832332954 * (mB - mb) - 0.5667579398799545 * la + 0.2361491416166477 * Rho2 / Lambda2) / (1.3695121740357048 * la - d2 * la)
         else:
-            print('Unknown subleading shape function -- please specify Meas.SubLeadPars()')
+            print('Unknown subleading shape function -- please specify Theory.SubLeadPars()')
 
         #calculating d0, d1 and d2 and returning them in a numpy array
         return np.array([1.-x, x* (1-d2), x*d2])
     
     
     # Calculate shape fuction moment of order 'order'
-    def Moment(self, c_n_params, order: int):
-        if (order > np.size(self.Fmn_moments['expx3']['Moment'])): print('Meas.Moment(): requested an order of moment, that cannot be calculated')
+    def Moment(self, c_n_params: npVector, order: int) -> float:
+        if (order > np.size(self.Fmn_moments[settings.config["TheoryTag"]]['Moment'])): print('Theory.Moment(): requested an order of moment, that cannot be calculated')
         value = 0
 
-        prepared_moment = np.pow(self.SubleadTheory['babar_hadtag']['la'+settings.SubLeadBasisExpansion]['lambda'], order) * self.Fmn_moments['expx3']['Values'][order] #TODO: Debends on key babar_hadtag, doesn't bother but not pretty
+        # Prepares Moment, using the lambda for which the fit is currently calculated
+        prepared_moment = np.pow(Tools.StrToLambda(settings.SubLeadBasisExpansion), order) * self.Fmn_moments[settings.config["TheoryTag"]]['Values'][order]
         for i in range(np.size(c_n_params)):
             for j in range(np.size(c_n_params)):
                 value += prepared_moment[i][j] * c_n_params[i] * c_n_params[j]
         return value
     
-    # Calculate mb^1S for a given set of cn's
-    def mb1SPrediction(self, c_n_params):
+    # Calculate mb for a given set of cn's
+    def mb1SPrediction(self, c_n_params: npVector) -> float:
         mb = 0
         M1 = self.Moment(c_n_params, 1)
         M2 = self.Moment(c_n_params, 2)
@@ -190,13 +192,12 @@ class Meas:
         p = -18 * Lambda2 - 25 * M1 * M1 + 36 * M2 - 22 * M1 * mB + 11 * mB * mB
         q = 5 * M1 * (27 * Lambda2 + 25 * M1 * M1 - 54 * M2) - 3 * (45 * Lambda2 - 55 * M1 * M1 + 72 * M2) * mB + 51 * M1 * mB * mB - 17 * mB * mB * mB + 162 * (M3 + Rho2)
         u = np.cbrt((-q + np.sqrt(q * q + p * p * p)))
-        #print("M1 = %f, M2 = %f, M3 = %f" % (M1,M2,M3))
         mb = 1. / 6. * (5 * (mB - M1) - p / u + u)
 
         return mb
     
     # Calculate lambda for a given set of cn's
-    def lambda11SPrediction(self, c_n_params):
+    def lambda11SPrediction(self, c_n_params: npVector) -> float:
         M1 = self.Moment(c_n_params, 1)
         lambda2 = settings.La2
         mB = settings.mB
@@ -207,35 +208,35 @@ class Meas:
         return lambda1
     
     #converts an's into cn's
-    def ConvertPars(pars):
-        length = np.size(pars)-1
+    def ConvertPars(par: Vector) -> Vector:
+        length = np.size(par)-1
         if(length < 0):
             length = np.size(settings.FitVars)-1
 
-        annorm = 1.0 + np.sum(pars[1:]**2)
+        annorm = 1.0 + np.sum(par[1:]**2)
 
         cn = [1.0/np.sqrt(annorm)]
 
         for i in range(length):
-            cn.append(pars[i+1]/np.sqrt(annorm)) #NOTE: Converts rest
+            cn.append(par[i+1]/np.sqrt(annorm))
 
         return cn
 
-    #The given parameters pars are probaply the an's which should be converted into cn's
-    def Chisq(self, pars):
-        cn = Meas.ConvertPars(pars)
-        norm = pars[0]
+    # The given parameters par are an's which will be converted into cn's
+    # Returns the chisq of the current prediction. It's the function we minimize to get the 'par' as fit results
+    def Chisq(self, par: Vector) -> float:
+        cn = Theory.ConvertPars(par)
+        norm = par[0]
 
         pred_glob = np.array([])
         meas_glob = np.array([])
 
+        # Sets Size of the global matrices, depending on the size of the different measurements
         size = 0
         minimum = {}
         for key in settings.KeyOrder:
-            
-            if key in settings.config["Minimum"]:
-                minimum[key] = settings.config["Minimum"][key]
-            else: minimum[key] = 0
+            # If there is no minimum set in the config file for a measurement, then the minimum is zero
+            minimum[key] = settings.config["Minimum"].get(key, 0)
 
             size += np.size(self.exp_data[key]['dBFs'])-minimum[key]
 
@@ -245,37 +246,38 @@ class Meas:
 
         for key in settings.KeyOrder:
 
+            # Determine # of Bins
             nbins = np.size(self.exp_data[key]['dBFs'])
             min = minimum[key]
-            max = nbins # TODO:In the C++ Code, there is an if else statement, don't really know why we need it
-            full_pred = Meas.BsgPrediction_full(self,key, settings.BasisExpansion, cn, norm)
+            max = nbins # No Option yet to have a different Maximum. Could be implemented similar to the minimum though
+
+            # Construct individual matrices to store predictions and measurements
+            full_pred = Theory.FullBsgPrediction(self,key, settings.BasisExpansion, cn, norm)
             pred =  full_pred[min:max+1]
             meas = self.exp_data[key]['dBFs'][min:max+1]
             Cov = self.exp_data[key]['Cov'][min:max+1,min:max+1]
+            
+            # Add to global prediction
             pred_glob = np.append(pred_glob, pred)
             meas_glob = np.append(meas_glob, meas)
-            Tools.set_sub(Cov_glob, ntot, ntot, Cov)
+            Tools.SetSub(Cov_glob, ntot, ntot, Cov)
             ntot += max-min
         
         Cov_glob = np.array(np.linalg.inv(Cov_glob)) 
         
-        Cov_glob = Tools.make_positive_definite(Cov_glob, eps = 0) # Makes Matrice positive definite
+        Cov_glob = Tools.MakePositiveDefinite(Cov_glob, eps = 0) # Forces Matrice to be positive definite
 
 
-        #Calculate Chi^2
+        #Calculate chi2
         Dummy = np.dot((meas_glob - pred_glob).transpose(), Cov_glob)
         Chisq = np.dot(Dummy, (meas_glob - pred_glob))
 
         self.chisq = Chisq
-        self.mb = self.mb1SPrediction(cn)
+
+        self.mb = self.mb1SPrediction(cn) # Store current mb & moments
         self.M1 = self.Moment(cn,1)
         self.M2 = self.Moment(cn,2)
         self.M3 = self.Moment(cn,3)
-        self.la = settings.BasisExpansion # TODO: in C++ via a function, which returns a string with the used _expansion, I guess it is my 'end'
-        
-        # New line to check global covariance matrix, can be deleted
-        self.glob_cov = Cov_glob
-        self.glob_meas = meas_glob
-        self.glob_pred = pred_glob
+        self.la = settings.BasisExpansion 
         
         return Chisq

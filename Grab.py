@@ -222,7 +222,7 @@ g = Grab()
 
 Fmn_moments = Grab.GrabMoments()
 #print(Fmn_moments['expx4']['Values'][3]) #FIXME: zu wenig Nachkommastellen
-Tools.store_in_pickle(Fmn_moments, 'theory/Fmn_moments')
+Tools.StoreInPickle(Fmn_moments, 'theory/Fmn_moments')
 
 #Experimental dictionary from 'measurements/%key%.root'
 
@@ -238,7 +238,7 @@ exp_data = {
             "belle": Grab.GrabMeasurement(data_tag_list[3],data_label_list[3])
             }
 
-Tools.store_in_pickle(exp_data, 'data/exp_data')
+Tools.StoreInPickle(exp_data, 'data/exp_data')
 
 
 # Theory Dictionary in pickle with all data of '%key%_NNLLNNLO_la%end%.txt' from mb47_mc13_nf3_as207_expx3
@@ -250,7 +250,7 @@ theory_dictionary_expx3 = {
     "belle": g.grab_mids('belle')
     }
 
-Tools.store_in_pickle(theory_dictionary_expx3, 'theory/theory_dictionary_expx3')
+Tools.StoreInPickle(theory_dictionary_expx3, 'theory/theory_dictionary_expx3')
 
 #print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
 
@@ -265,7 +265,7 @@ theory_dictionary_SSF27 = {
 
 #print(theory_dictionary_SSF27['babar_hadtag']['la10575'])
 
-Tools.store_in_pickle(theory_dictionary_SSF27, 'theory/theory_dictionary_SSF27')
+Tools.StoreInPickle(theory_dictionary_SSF27, 'theory/theory_dictionary_SSF27')
 
 # Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
 hist_nom = {
@@ -275,4 +275,4 @@ hist_nom = {
     "belle":        Grab.GrabNomfit(data_tag_list[3],data_label_list[3])
     }
 
-Tools.store_in_pickle(hist_nom, 'histogram/hist_nom')
+Tools.StoreInPickle(hist_nom, 'histogram/hist_nom')

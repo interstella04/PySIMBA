@@ -6,8 +6,6 @@ from matplotlib import rc
 from Tools import Tools
 
 
-#NOTE: MEASUREMENT is now exp_data, so this is not working anymore
-
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 plt.rcParams.update({'font.size': 13})
@@ -16,8 +14,8 @@ class Plot:
     
     def __init__(self):
         self.measurement = Meas()
-        self.collected_fits = Tools.pickle_to_dict('fit/collected_fits')
-        self.just_sem = Tools.pickle_to_dict('fit/just_sem')
+        self.collected_fits = Tools.PickleToDict('fit/collected_fits')
+        self.just_sem = Tools.PickleToDict('fit/just_sem')
         
         
     def simple_plot(self, key, fig, ax, div_bin = False, box_opt = False):
@@ -101,7 +99,7 @@ class Plot:
             
 
 
-        y = self.measurement.BsgPrediction_full(key,end, cn, norm)
+        y = self.measurement.FullBsgPrediction(key,end, cn, norm)
 
         if key == 'belle': y*= 1/1000
 
@@ -138,7 +136,7 @@ class Plot:
     def calc_pred(self, key, an):
         cn = Meas.ConvertPars(an)
         norm = an[0]
-        pred  = self.measurement.BsgPrediction_full(key,settings.BasisExpansion, cn, norm)
+        pred  = self.measurement.FullBsgPrediction(key,settings.BasisExpansion, cn, norm)
         #if key == 'belle': pred*= 1/1000
 
         return pred
