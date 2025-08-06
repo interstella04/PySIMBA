@@ -8,22 +8,30 @@ from Meas import settings
 from Meas import Theory
 
 class Fitter:
+     
      def __init__(self):
-         pass
+         
+         m: Minuit
+
+         mb: float
+         chisq: float
+
+         theo: Theory
+
     
     #start_pars: Which start parameters will be used
-    #number_pars: How many parameters will be fitted, so how many of start_pars will be used
+    #NumbPar: How many parameters will be fitted, so how many of start_pars will be used
     #no_meas: how many measurements will be included in the fit
     #with_minos: Calculate the fit with or without minos
-     def DoFit(start_pars, number_pars = 4, no_meas = 2, with_minos = True):
-        
-        sets = settings()
-        sets.KeyOrder = sets.KeyOrder[0:no_meas]
-        print('Fit for: '+ str(sets.KeyOrder))
+     def DoSingleFit(self, NumbPar: int = 3, with_minos = True):
+
+        ########################
+        print('Fit for: '+ str(settings.KeyOrder) + ' using %d parameters' % NumbPar)
+        ########################
 
         mes = Theory()
 
-        m = Minuit(mes.Chisq, start_pars[0:number_pars])
+        m = Minuit(mes.Chisq, settings.config["StartValues"][0:NumbPar], name = settings.config["FitVars"][0:NumbPar])
         value = mes.Chisq(np.array(m.values))
         m.print_level = 1
 
@@ -35,16 +43,17 @@ class Fitter:
         m.migrad(ncall= 100000, use_simplex= True)
         m.hesse()
         
-        chisq = mes.chisq
-        mb = mes.mb
+        self.chisq = mes.chisq
+        self.mb = mes.mb
 
         if with_minos == True:
             m.minos()
         
         value = mes.Chisq(np.array(m.values))
             
-        return m, mes, chisq, mb
+        return m, mes, self.chisq, self.mb
      
+     '''
      #Calculates fits with several numbers of fitting Parameters for a specific number of measurements
      def CollectFitData(start_pars, start_numb_pars, end_numb_pars, no_meas = 2, with_minos = True):
         results = {}
@@ -64,7 +73,8 @@ class Fitter:
         }
 
         return overall
-'''
+     
+
 start_pars = np.array([1, 0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0])
 
 collected_fits ={

@@ -23,3 +23,7 @@ How to show results:
 - Plot with fitted Data histogram, resulting chisq in corner
 - Compare option 
 - create Table with an's and cn's 
+
+
+How to Add Measurements
+- In Grab, create a AddMeasurement Function
