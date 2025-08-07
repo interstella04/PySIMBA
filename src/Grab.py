@@ -32,7 +32,7 @@ class Grab:
         }
 
         # Open File and grab measurement histogram
-        f = TFile("../simba/Cpp/share/simba/measurements/" + Tag + ".root")
+        f = TFile("../../simba/Cpp/share/simba/measurements/" + Tag + ".root")
         h = f.Get(Tag)
         # Determine the number of bins
         nbins = h.GetNbinsX()
@@ -105,9 +105,9 @@ class Grab:
             values = []
             bins = []
             if mid == 'SSF27':
-                file = open('../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_SSF27/'+key+'_SSF27_'+end+'.txt', 'r')
+                file = open('../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_SSF27/'+key+'_SSF27_'+end+'.txt', 'r')
             else:
-                file = open('../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_expx3/'+ key + '_'+ mid +'_la'+ end +'.txt', 'r')
+                file = open('../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_expx3/'+ key + '_'+ mid +'_la'+ end +'.txt', 'r')
             for i, line in enumerate(file):
                 if i < start_line:  # jumps to start line, where the data begins
                     continue
@@ -162,7 +162,7 @@ class Grab:
             'Bins': np.array([]),
             'Values': np.array([])
         }
-        file = uproot.open('../simba/Cpp/share/simba/measurements/script/nomfit_mom_3001_NNLLNNLO_la06_'+Tag+'_fit.root')
+        file = uproot.open('../../simba/Cpp/share/simba/measurements/script/nomfit_mom_3001_NNLLNNLO_la06_'+Tag+'_fit.root')
         hist_dict['Bins'] = file['fit'].axis().edges()
         hist_dict['Values'] = file['fit'].values()
         return hist_dict
@@ -170,9 +170,9 @@ class Grab:
     def GrabMoments():
     
         Fmn_moments = {
-            'expx3'  :dict,
-            'expx4'  :dict,
-            'gaussx3':dict
+            'expx3'  :  dict,
+            'expx4'  :  dict,
+            'gaussx3':  dict
         }
         names = ['expx3','expx4','gaussx3']
 
@@ -186,7 +186,7 @@ class Grab:
             strip_string = '# moment ='
             if (name == 'expx3'): strip_string = '# bin ='
 
-            file =  open ('../simba/Cpp/share/simba/theory/Fmn_moments_'+name+'.txt', 'r')
+            file =  open ('../../simba/Cpp/share/simba/theory/Fmn_moments_'+name+'.txt', 'r')
             for i, line in enumerate(file):
                 if i < start_line:  # jumps to start line, where the data begins
                     continue
@@ -222,7 +222,7 @@ g = Grab()
 
 Fmn_moments = Grab.GrabMoments()
 #print(Fmn_moments['expx4']['Values'][3]) #FIXME: zu wenig Nachkommastellen
-Tools.StoreInPickle(Fmn_moments, 'theory/Fmn_moments')
+Tools.StoreInPickle(Fmn_moments, '../theory/Fmn_moments')
 
 #Experimental dictionary from 'measurements/%key%.root'
 
@@ -238,7 +238,7 @@ exp_data = {
             "belle": Grab.GrabMeasurement(data_tag_list[3],data_label_list[3])
             }
 
-Tools.StoreInPickle(exp_data, 'data/exp_data')
+Tools.StoreInPickle(exp_data, '../data/exp_data')
 
 
 # Theory Dictionary in pickle with all data of '%key%_NNLLNNLO_la%end%.txt' from mb47_mc13_nf3_as207_expx3
@@ -250,7 +250,7 @@ theory_dictionary_expx3 = {
     "belle": g.grab_mids('belle')
     }
 
-Tools.StoreInPickle(theory_dictionary_expx3, 'theory/theory_dictionary_expx3')
+Tools.StoreInPickle(theory_dictionary_expx3, '../theory/theory_dictionary_expx3')
 
 #print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
 
@@ -265,7 +265,7 @@ theory_dictionary_SSF27 = {
 
 #print(theory_dictionary_SSF27['babar_hadtag']['la10575'])
 
-Tools.StoreInPickle(theory_dictionary_SSF27, 'theory/theory_dictionary_SSF27')
+Tools.StoreInPickle(theory_dictionary_SSF27, '../theory/theory_dictionary_SSF27')
 
 # Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
 hist_nom = {
@@ -275,4 +275,4 @@ hist_nom = {
     "belle":        Grab.GrabNomfit(data_tag_list[3],data_label_list[3])
     }
 
-Tools.StoreInPickle(hist_nom, 'histogram/hist_nom')
+Tools.StoreInPickle(hist_nom, '../histogram/hist_nom')

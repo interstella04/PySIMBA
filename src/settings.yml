@@ -21,22 +21,22 @@ TheoryTag: 'expx3'
 SubleadingTheoryTag: 'SSF27'
 
 # Path to the dictionaries containing the used theory
-TheoryPath: theory/theory_dictionary_expx3
-SubleadingTheoryPath: theory/theory_dictionary_SSF27
+TheoryPath: ../theory/theory_dictionary_expx3
+SubleadingTheoryPath: ../theory/theory_dictionary_SSF27
 
 # Path for constraints and moments
-TheoryMomentsPath: theory/Fmn_moments
+TheoryMomentsPath: ../theory/Fmn_moments
 
 ######################################################
 # Measurement Configuration
 ######################################################
 
 # Path to measurement dictionary
-MeasurementPath: data/exp_data
+MeasurementPath: ../data/exp_data
 
 ## Which measurements should be included in the fit?
 KeyOrder: ["belle", "babar_hadtag", "babar_incl"]
-#"babar_sem"
+#"babar_sem" 
 
 # Only takes the values from index 'Minimum' of the experimental data
 Minimum:
@@ -62,7 +62,7 @@ FitVars: ["norm", "a1", "a2", "a3", "a4", "a5"]
 StartValues: [0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0]
 
 # How many Parameters do you want ?
-NumbPar: [3]
+NumbPar: 3
 
 ######################################################
 # Theory Input Values 

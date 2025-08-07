@@ -1,9 +1,6 @@
 import numpy as np
 from Tools import Tools
-import traceback
-from dataclasses import dataclass
-from iminuit import Minuit, cost
-import iminuit
+from iminuit import Minuit
 from Meas import settings
 from Meas import Theory
 
@@ -18,12 +15,18 @@ class Fitter:
 
          theo: Theory
 
+         NumbOfPar: int
+
+         Lambda: float
+
     
     #start_pars: Which start parameters will be used
     #NumbPar: How many parameters will be fitted, so how many of start_pars will be used
     #no_meas: how many measurements will be included in the fit
     #with_minos: Calculate the fit with or without minos
-     def DoSingleFit(self, NumbPar: int = 3, with_minos = True):
+     def DoSingleFit(self, NumbPar: int = 3, with_minos: bool = True):
+
+        self.NumbOfPar = NumbPar
 
         ########################
         print('Fit for: '+ str(settings.KeyOrder) + ' using %d parameters' % NumbPar)
@@ -31,27 +34,32 @@ class Fitter:
 
         mes = Theory()
 
-        m = Minuit(mes.Chisq, settings.config["StartValues"][0:NumbPar], name = settings.config["FitVars"][0:NumbPar])
-        value = mes.Chisq(np.array(m.values))
-        m.print_level = 1
+        n = Minuit(mes.Chisq, settings.config["StartValues"][0:NumbPar], name = settings.config["FitVars"][0:NumbPar])
+        value = mes.Chisq(np.array(n.values))
+        n.print_level = 1
 
-        m.tol = 1000 #sets EDM_max = 0.1
+        n.tol = 1000 #sets EDM_max = 0.1
         
-        m.errordef = 0.0001
-        #m.simplex()
-        m.tol = 500 # sets EDM_max = 0.0001
-        m.migrad(ncall= 100000, use_simplex= True)
-        m.hesse()
+        n.errordef = 0.0001
+        #n.simplex()
+        n.tol = 500 # sets EDM_max = 0.0001
+        n.migrad(ncall= 100000, use_simplex= True)
+        n.hesse()
         
         self.chisq = mes.chisq
         self.mb = mes.mb
 
         if with_minos == True:
-            m.minos()
+            n.minos()
         
-        value = mes.Chisq(np.array(m.values))
+        value = mes.Chisq(np.array(n.values))
+
+        self.m  = n
+        self.theo = mes
+
+        self.Lambda = Tools.StrToLambda(settings.BasisExpansion)
             
-        return m, mes, self.chisq, self.mb
+        return
      
      '''
      #Calculates fits with several numbers of fitting Parameters for a specific number of measurements
