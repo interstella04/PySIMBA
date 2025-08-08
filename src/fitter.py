@@ -20,9 +20,7 @@ class Fitter:
          Lambda: float
 
     
-    #start_pars: Which start parameters will be used
     #NumbPar: How many parameters will be fitted, so how many of start_pars will be used
-    #no_meas: how many measurements will be included in the fit
     #with_minos: Calculate the fit with or without minos
      def DoSingleFit(self, NumbPar: int = 3, with_minos: bool = True):
 

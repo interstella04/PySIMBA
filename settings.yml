@@ -6,7 +6,7 @@
 Tag: result
 
 # Path to store the result files
-ResultPath: result/
+ResultPath: ../result/
 
 ######################################################
 # Theory Configuration
@@ -62,7 +62,7 @@ FitVars: ["norm", "a1", "a2", "a3", "a4", "a5"]
 StartValues: [0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0]
 
 # How many Parameters do you want ?
-NumbPar: 3
+NumbPar: 6
 
 ######################################################
 # Theory Input Values 

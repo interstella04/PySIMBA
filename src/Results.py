@@ -49,7 +49,7 @@ class result:
         return x, y, dx, dy, label 
 
 
-    def SimplePlot(ax, x, y, dx = None, dy = None, label: str = None, box_opt: bool = False, color: str = 'black'):
+    def SimplePlot(ax, x, y, dx = None, dy = None, label: str = None, box_opt: bool = False, color: str = 'black', min_y = None):
 
         # Set Box options
         if (box_opt):
@@ -66,7 +66,7 @@ class result:
         ax.set_xlabel('$E[\\mathrm{GeV}]$', fontsize = 16, loc = "right")
         ax.set_title('$\\mathrm{%s}$' % label, fontsize = 20)
 
-        ax.set_ylim(bottom = 0)
+        ax.set_ylim(bottom = min_y)
 
         return
     
@@ -86,13 +86,13 @@ class result:
         return
     
     # Calculates Fit for a Number of Parameters
-    def CalculateFitObject(NumbPar: int = 3):
+    def CalculateFitObject(NumbPar: int = 3) -> Fitter:
         fit = Fitter()
         fit.DoSingleFit(NumbPar, with_minos= True)
         
         return fit
     
-    def CalculatePrediction(self, key,  fit: Fitter):
+    def CalculatePrediction(self, key: str,  fit: Fitter) -> list[float]:
         an = np.array(fit.m.values)
         norm = an[0]
 
@@ -103,11 +103,13 @@ class result:
         return pred
     
     def AddFitInformation(ax, fit: Fitter):
+        # Information
         textstr = '\n'.join((
             '$\\ \\chi^2 = \\: %0.2f$' % (fit.chisq,),
             '$\\ m_b = \\: %0.3f$' % (fit.mb,),
             '$ \\ n_p = \\: %d$' % (fit.NumbOfPar,),
             '$ \\ \\lambda = \\: %0.3f$' % (fit.Lambda,)))
+        # Box Placement and Options
         ax.text(0.9, 0.95, 
                 textstr, 
                 fontsize=12, 
@@ -115,10 +117,13 @@ class result:
                 bbox=dict(facecolor="white", alpha=1, edgecolor="black"), 
                 transform = ax.transAxes)
         
+        # Add Legend
+        ax.legend()
+        
         return
         
          
-    def Plot(self, key, fit_obj: Fitter,  div_bin = False, box_opt = False):
+    def Plot(self, key: str, fit_obj: Fitter,  div_bin: bool = False, box_opt: bool = False):
 
         print("Plotting %s ... " % key)
 
@@ -136,17 +141,41 @@ class result:
         pred = result.CalculatePrediction(self, key, fit_obj)
 
         result.SimpleHistogram(a, self.ExpData[key]['Bins'], pred, color= 'red')
-        result.SimplePlot(a, x, y, dx, dy, label, box_opt = False)
+        result.SimplePlot(a, x, y, dx, dy, label, box_opt = False, min_y= 0)
         result.AddFitInformation(a, fit_obj)
-        f.savefig("../theory/" + key + "_fit", dpi = 500)
+        f.savefig(settings.config["ResultPath"] + settings.config["Tag"] + '_' + key, dpi = 500)
+        plt.close()
 
         return
     
-    def ShowResults(self, fit_obj: Fitter, div_bin = False, box_opt = False):
+    def PrintResultToTxt(fit_obj: Fitter):
+        print('Writing ...')
+
+        with open(settings.config["ResultPath"] + settings.config['Tag'] + '.txt', 'w') as file:
+            file.write('Results for %d Parameters\n' % fit_obj.NumbOfPar)
+
+            # Fit results
+            file.write('Chisq = %.4f \n' % fit_obj.chisq)
+            file.write('mb = %.4f \n' % fit_obj.mb)
+
+            # Write an's to file 
+            for i in range(0, fit_obj.NumbOfPar, 1):
+                file.write('%s = %.5f \n' % (settings.config["FitVars"][i], fit_obj.m.values[i]))
+
+            file.close()
+        return
+
+    
+    def ShowResults(self, fit_obj: Fitter, div_bin: bool = False, box_opt: bool = False):
+
+        result.PrintResultToTxt(fit_obj)
+
         for key in settings.KeyOrder:
             self.Plot(key, fit_obj, div_bin, box_opt)
+
         return
     
+    # Calculate the Fit, depending on config file and show the results in the result folder
     def Run():
         res = result()
 

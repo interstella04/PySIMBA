@@ -2,23 +2,34 @@ import pickle
 import numpy as np
 
 class Tools:
-    def StoreInPickle(dictionary, tag):
+
+    # Stores Dictionarie in Pickle with given Tag for filename
+    def StoreInPickle(dictionary: dict, tag: str):
         with open(tag+".pkl", "wb") as file:
             pickle.dump(dictionary,file)
         return
             
-    def PickleToDict(pkl_file):
+    # Converts Pickle into Dictionaries
+    def PickleToDict(pkl_file: str) -> dict:
+        """
+        Parameter:
+        pkl_file: name of the .pkl file. Doesnt't include the string '.pkl'
+        """
         with open(pkl_file + ".pkl", "rb") as file:
             data = pickle.load(file)
         return data
     
-    def GetSub(matrix, row_lwb, row_upb, col_lwb, col_upb):
+    # Returns SubMatrix at given indices of a larger Matrix
+    def GetSub(matrix, row_lwb: int, row_upb: int, col_lwb: int, col_upb: int) -> list[list[float]]:
         return matrix[row_lwb:row_upb+1, col_lwb:col_upb+1]
     
-    def SetSub(matrix, row_lwb, col_lwb, sub_matrix):
+    # Combines two matrices, by making a larger matrix
+    def SetSub(matrix, row_lwb: int, col_lwb: int, sub_matrix):
         rows, cols = sub_matrix.shape
         matrix[row_lwb:row_lwb+rows, col_lwb:col_lwb+cols] = sub_matrix
+        return
 
+    # Forces a positive definite Matrice
     def MakePositiveDefinite(A: np.ndarray, eps: float = 1e-8) -> np.ndarray:
         """
         Force a symmetric matrix A to be numerically positive definite.
@@ -49,14 +60,13 @@ class Tools:
 
         return A_pd  
     
-    def GetNearPSD(A):
-        C = (A + A.T)/2
-        eigval, eigvec = np.linalg.eig(C)
-        eigval[eigval < 0] = 0
-    
-        return eigvec.dot(np.diag(eigval)).dot(eigvec.T)
-    
-    def StrToLambda(BasisExpansion: str):
+    # Turns every string of a possible Basis/ or Subleading Basis Expansion into the corresponding lambda
+    # i.e '0575' -> 0.575 or '10575' -> 0.575
+    def StrToLambda(BasisExpansion: str) -> float:
+        """
+        Examples for Input: '0575' or '10575'
+        """
+
         # Step 1: Remove leading 1 or 2 if present
         if BasisExpansion[0] in ('1', '2'):
             BasisExpansion = BasisExpansion[1:]
