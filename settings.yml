@@ -45,7 +45,7 @@ Minimum:
 
 # Scale
 Scale:
-  belle: 2
+  belle: 0.001
 
 ######################################################
 # Fit Configuration
@@ -62,7 +62,7 @@ FitVars: ["norm", "a1", "a2", "a3", "a4", "a5"]
 StartValues: [0.00506919, 0.0, 0.0798100, 0.0870341, 0.0250290, 0.0]
 
 # How many Parameters do you want ?
-NumbPar: 6
+NumbPar: 4
 
 ######################################################
 # Theory Input Values 

@@ -11,7 +11,7 @@ rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 plt.rcParams.update({'font.size': 13})
 
-class result:
+class Result:
 
     def __init__(self):
         #Dictionary with experimental data
@@ -31,40 +31,45 @@ class result:
             x[i] = dx[i]+self.ExpData[key]['Bins'][i]
         
         # Divide by the width of the bin or not
+         
+        scale = settings.config["Scale"].get(key, 1) # If there is a scale defined in settings.yml take that, else scale = 1
+
+
         if(div_bin == False):
             y = self.ExpData[key]['dBFs']
-            dy = self.ExpData[key]['dBFErrors']
+            dy = self.ExpData[key]['dBFErrors'] 
         else:
             y = self.ExpData[key]['dBFs']/(2*dx)
             dy = self.ExpData[key]['dBFErrors']/(2*dx)
 
-        ''' Catch Scale for Measurements '''
-        #if key == 'belle': #TODO: BELLE SCALE WHAAAT?
-        #    ax.errorbar(x, y, dy, dx, fmt = 'k.', markersize = 5, label = '$\\mathrm{Exp. Data}$')
-        #    ax.set_ylabel('$\\mathrm{Events} \\: [10^{3}  / 50 \\mathrm{MeV}]$', fontsize = 16)
+        y *= scale 
+        dy *= scale
         
         # return the Label of the Measurement to put in the title
-        label = self.ExpData[key]['Label']
+        title = self.ExpData[key]['Label']
 
-        return x, y, dx, dy, label 
+        if key == 'belle': ylabel = r'$\Delta B \left( B \rightarrow X_S \gamma \right) \: [10^{3}  / 50 \mathrm{ MeV}]$'
+        else: ylabel = r'$\Delta B \left( B \rightarrow X_S \gamma \right) \: [10^{-4}  / 0.1 \mathrm{ GeV}]$'
+
+        return x, y, dx, dy, title, ylabel
 
 
-    def SimplePlot(ax, x, y, dx = None, dy = None, label: str = None, box_opt: bool = False, color: str = 'black', min_y = None):
+    def SimplePlot(ax, x, y, dx = None, dy = None, title: str = None, ylabel:str = None, box_opt: bool = False, color: str = 'black', min_y = None):
 
         # Set Box options
         if (box_opt):
             textstr = '\n'.join((
-                '$\\mathrm{Entries:} \\: %d$' % (np.size(x),),
-                '$\\mathrm{Mean:} \\: %0.3f$' % (x.mean(),),
-                '$\\mathrm{Std Dev:} \\: %0.4f$' % (x.std(),)))
+                r'$\mathrm{Entries:} \\: %d$' % (np.size(x),),
+                r'$\mathrm{Mean:} \\: %0.3f$' % (x.mean(),),
+                r'$\mathrm{Std Dev:} \\: %0.4f$' % (x.std(),)))
             ax.text(0.8, 0.95, textstr, fontsize=12, color="black", bbox=dict(facecolor="white", alpha=1, edgecolor="black"), transform = ax.transAxes)
         
         
-        ax.errorbar(x, y, dy, dx, fmt='o', markersize = 5, label = '$\\mathrm{Exp. Data}$', color = color )
-        ax.set_ylabel('$\\Delta B \\left( B \\rightarrow X_S \\gamma \\right) \\: [10^{-4}  / 0.1 \\mathrm{GeV}]$', fontsize = 16)
+        ax.errorbar(x, y, dy, dx, fmt='o', markersize = 5, label = r'$\mathrm{Exp. Data}$', color = color )
+        ax.set_ylabel(ylabel, fontsize = 16)
               
-        ax.set_xlabel('$E[\\mathrm{GeV}]$', fontsize = 16, loc = "right")
-        ax.set_title('$\\mathrm{%s}$' % label, fontsize = 20)
+        ax.set_xlabel(r'$E_{\gamma}[\mathrm{GeV}]$', fontsize = 16, loc = "right")
+        ax.set_title(r'$\mathrm{%s}$' % title , fontsize = 20)
 
         ax.set_ylim(bottom = min_y)
 
@@ -78,7 +83,7 @@ class result:
         where="post",       # Linienverlauf nach rechts
         color=color,       
         lw=1,
-        label = '$\\mathrm{FIT}$'               
+        label = r'$\mathrm{FIT}$'               
         )
 
         ax.set_xlim(left = bins[0], right = bins[-1])
@@ -100,17 +105,22 @@ class result:
 
         pred = fit.theo.FullBsgPrediction(key, settings.BasisExpansion, cn, norm)
 
+
+        # Apply scale
+        scale = settings.config["Scale"].get(key, 1)
+        pred *= scale
+
         return pred
     
     def AddFitInformation(ax, fit: Fitter):
         # Information
         textstr = '\n'.join((
+            '$ \\ %s $' % (Tools.make_c_string(fit.NumbOfPar),),
             '$\\ \\chi^2 = \\: %0.2f$' % (fit.chisq,),
-            '$\\ m_b = \\: %0.3f$' % (fit.mb,),
-            '$ \\ n_p = \\: %d$' % (fit.NumbOfPar,),
-            '$ \\ \\lambda = \\: %0.3f$' % (fit.Lambda,)))
+            '$\\ m_b = \\: %0.3f \\ \\mathrm{GeV}$' % (fit.mb,),
+            '$ \\ \\lambda = \\: %0.3f \\ \\mathrm{GeV}$' % (fit.Lambda,)))
         # Box Placement and Options
-        ax.text(0.9, 0.95, 
+        ax.text(0.82, 0.87, 
                 textstr, 
                 fontsize=12, 
                 color="black", 
@@ -130,19 +140,19 @@ class result:
         # Plots just experimental Data
         fig, ax = plt.subplots(figsize=(8, 6))
 
-        x, y, dx, dy, label = result.PrepareExpData(self, key, div_bin)
-        result.SimplePlot(ax, x, y, dx, dy, label, box_opt)
+        x, y, dx, dy, title, ylabel = Result.PrepareExpData(self, key, div_bin)
+        Result.SimplePlot(ax, x, y, dx, dy, title, ylabel, box_opt)
         fig.savefig('../data/' + key, dpi = 500)
         plt.close()
 
 
         # Plots the ExpData with the calculated Prediction
         f, a = plt.subplots(figsize=(8, 6))
-        pred = result.CalculatePrediction(self, key, fit_obj)
+        pred = Result.CalculatePrediction(self, key, fit_obj)
 
-        result.SimpleHistogram(a, self.ExpData[key]['Bins'], pred, color= 'red')
-        result.SimplePlot(a, x, y, dx, dy, label, box_opt = False, min_y= 0)
-        result.AddFitInformation(a, fit_obj)
+        Result.SimpleHistogram(a, self.ExpData[key]['Bins'], pred, color= 'red')
+        Result.SimplePlot(a, x, y, dx, dy, title, ylabel, box_opt = False, min_y= 0)
+        Result.AddFitInformation(a, fit_obj)
         f.savefig(settings.config["ResultPath"] + settings.config["Tag"] + '_' + key, dpi = 500)
         plt.close()
 
@@ -154,7 +164,7 @@ class result:
         with open(settings.config["ResultPath"] + settings.config['Tag'] + '.txt', 'w') as file:
             file.write('Results for %d Parameters\n' % fit_obj.NumbOfPar)
 
-            # Fit results
+            # Fit Results
             file.write('Chisq = %.4f \n' % fit_obj.chisq)
             file.write('mb = %.4f \n' % fit_obj.mb)
 
@@ -164,25 +174,24 @@ class result:
 
             file.close()
         return
-
     
     def ShowResults(self, fit_obj: Fitter, div_bin: bool = False, box_opt: bool = False):
 
-        result.PrintResultToTxt(fit_obj)
+        Result.PrintResultToTxt(fit_obj)
 
         for key in settings.KeyOrder:
             self.Plot(key, fit_obj, div_bin, box_opt)
 
         return
     
-    # Calculate the Fit, depending on config file and show the results in the result folder
+    # Calculate the Fit, depending on config file and show the Results in the Result folder
     def Run():
-        res = result()
+        res = Result()
 
-        fit_obj = result.CalculateFitObject(settings.config["NumbPar"])
+        fit_obj = Result.CalculateFitObject(settings.config["NumbPar"])
 
         res.ShowResults(fit_obj, False, False)
 
         return
 
-result.Run()
+Result.Run()

@@ -6,11 +6,11 @@
 - think about naming variables differently
 - Input smoothly, how should someone use the Code, should I write a 'main'? 
 - Plot class must be prettier and accessible
-- skip through all TODOS in my Code
+- skip through all TODOS in my  Code --> Belle Scale 1/2???
 - Change Fmn Moments dependency on expx3
 - Type hinting
-- Fix Titel spaces
-- Thinking about placing Grab.py somewhere else
+- Fix Titel spaces 'Babar Hadronic Tag' etc
+- Thinking about placing Grab.py somewhere else or even in the project
 
 - add other subleading theory, make it accessible through Tag in config file
 

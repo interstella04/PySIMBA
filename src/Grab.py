@@ -19,6 +19,8 @@ class Grab:
 
     def GrabMeasurement(Tag, Label):
 
+        print('Grab %s' % Tag)
+
         # Our Measurement Dictionary
         measDict = {
             "Label": Label,
@@ -71,7 +73,9 @@ class Grab:
 
     #key: Which experiment. possibilities: ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
     #mid: Which Order. possibilities: see self.mids
-    def grab_theory(self, key, mid):
+    def grab_theory(self, key, mid, functional = 'expx3'):
+
+        print('Grab Theory for %s %s' % (key, mid))
         
         # Different start lines of the data
         if mid == self.mids[0]:
@@ -105,7 +109,7 @@ class Grab:
             if mid == 'SSF27':
                 file = open('../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_SSF27/'+key+'_SSF27_'+end+'.txt', 'r')
             else:
-                file = open('../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_expx3/'+ key + '_'+ mid +'_la'+ end +'.txt', 'r')
+                file = open('../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_' + functional + '/'+ key + '_'+ mid +'_la'+ end +'.txt', 'r')
             for i, line in enumerate(file):
                 if i < start_line:  # jumps to start line, where the data begins
                     continue
@@ -147,11 +151,11 @@ class Grab:
     
     
     # Reads out every file of a given experiment name and returns them in a dictionary
-    def grab_mids(self, key):
+    def grab_mids(self, key, func = 'expx3'):
         final_data = {}
-
+        print('Functional form:' + func)
         for i,mid in enumerate(self.mids):
-            final_data['%s' % (mid,)] = self.grab_theory(key, mid)
+            final_data['%s' % (mid,)] = self.grab_theory(key, mid, functional = func)
         return final_data
     
 
@@ -168,6 +172,8 @@ class Grab:
         return hist_dict
 
     def GrabMoments():
+
+        print('Getting Moments')
     
         Fmn_moments = {
             'expx3'  :  dict,
@@ -227,7 +233,7 @@ Tools.StoreInPickle(Fmn_moments, '../theory/Fmn_moments')
 #Experimental dictionary from 'measurements/%key%.root'
 
 # We can change the titles of the Plots here
-data_label_list = ["BabarInclusiveSpectra", "BabarHadronicTag", "BabarSemileptonic", "Belle"]
+data_label_list = ["Babar Inclusive Spectra", "Babar Hadronic Tag", "Babar Semileptonic", "Belle"]
 
 data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
@@ -250,7 +256,23 @@ theory_dictionary_expx3 = {
     "belle": g.grab_mids('belle')
     }
 
+theory_dictionary_expx4 = {
+    "babar_hadtag": g.grab_mids('babar_hadtag', func= 'expx4'),
+    "babar_incl": g.grab_mids('babar_incl', func= 'expx4'),
+    "babar_sem": g.grab_mids('babar_sem', func= 'expx4'),
+    "belle": g.grab_mids('belle', func= 'expx4')
+    }
+
+theory_dictionary_gaussx3 = {
+    "babar_hadtag": g.grab_mids('babar_hadtag', func= 'gaussx3'),
+    "babar_incl": g.grab_mids('babar_incl', func= 'gaussx3'),
+    "babar_sem": g.grab_mids('babar_sem', func= 'gaussx3'),
+    "belle": g.grab_mids('belle', func= 'gaussx3')
+    }
+
 Tools.StoreInPickle(theory_dictionary_expx3, '../theory/theory_dictionary_expx3')
+Tools.StoreInPickle(theory_dictionary_expx4, '../theory/theory_dictionary_expx4')
+Tools.StoreInPickle(theory_dictionary_gaussx3, '../theory/theory_dictionary_gaussx3')
 
 #print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
 

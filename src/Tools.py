@@ -99,3 +99,9 @@ class Tools:
             for j in range(y0, y, ystep):
                 for k in range(z0, z, zstep):
                     yield i, j, k
+
+    def make_c_string(n: int) -> str:
+        # Create string "012...(n-1)"
+        subscript = "".join(str(i) for i in range(n))
+        # Format as c_{...}
+        return f"c_{{{subscript}}}"
