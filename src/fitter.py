@@ -28,33 +28,30 @@ class Fitter:
 
         print('Fit for: '+ str(settings.KeyOrder) + ' using %d parameters' % NumbPar)
 
-        print('b')
+        mes = Theory() # Initialize Theory Object which will be fitted
 
-        mes = Theory()
-
+        # Set up iminuit fit-object
         n = Minuit(mes.Chisq, settings.config["StartValues"][0:NumbPar], name = settings.config["FitVars"][0:NumbPar])
-        #value = mes.Chisq(np.array(n.values))
-        #n.print_level = 1
 
-        #n.tol = 0.01 #1000 #sets EDM_max = 0.1
-        
+        #n.tol = 0.1 (standart value)
         n.errordef = 0.0001
-        #n.simplex()
-        n.tol = 0.1 #500 # sets EDM_max = 0.0001
+        
+        # Calculate fit
         n.migrad(ncall= 100000, use_simplex= True)
         n.hesse()
         
+        # Save chisq and mb for later (Result class)
         self.chisq = mes.chisq
         self.mb = mes.mb
 
+        # Apply minos algorithm
         if with_minos == True:
             n.minos()
         
-        #value = mes.Chisq(np.array(n.values))
-
         self.m  = n
         self.theo = mes
 
+        # Turns Basis Expansion into a float for later usage
         self.Lambda = Tools.StrToLambda(settings.BasisExpansion)
             
         return
