@@ -1,2 +1,3 @@
-# SHK_SIMBA
-Python Code for the SIMBA project
+# PySIMBA
+Python Code for the Analysis of B Meson Inclusive Spectra.
+

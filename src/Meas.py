@@ -6,12 +6,16 @@ from dataclasses import dataclass
 
 # For config File
 import yaml
+from pathlib import Path
+
+#BASE_DIR = Path(__file__).resolve().parent
+#settings_path = BASE_DIR.parent / 'settings.yml'
 
 @dataclass
 class settings:
 
     # Open the yaml (config) file and store the information in config (dictionary)
-    with open("../settings.yml", "r") as f: 
+    with open('../settings.yml', "r") as f: 
         config = yaml.safe_load(f)
 
     # Read out Information of config
