@@ -1,15 +1,4 @@
-- Make config File, get settings from config file, also min, max for data should be in it
-    - everything in settings
-    - an output path
-    - path were initial data lays
-- comment Meas, Plot and Tools and Grab and Fitter
-- think about naming variables differently
 - Input smoothly, how should someone use the Code, should I write a 'main'? 
-- Plot class must be prettier and accessible
-- skip through all TODOS in my  Code --> Belle Scale 1/2???
-- Change Fmn Moments dependency on expx3
-- Type hinting
-- Fix Titel spaces 'Babar Hadronic Tag' etc
 - Thinking about placing Grab.py somewhere else or even in the project
 
 - add other subleading theory, make it accessible through Tag in config file
@@ -17,14 +6,3 @@
 
 Speeding Things up:
 - change np.append functions in normal list.append or list.extend functions
-
-
-How to show results:
-- One Plot with just data, like I already did with box and stuff
-- Plot with fitted Data histogram, resulting chisq in corner
-- Compare option 
-- create Table with an's and cn's 
-
-
-How to Add Measurements
-- In Grab, create a AddMeasurement Function

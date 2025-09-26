@@ -6,10 +6,6 @@ from dataclasses import dataclass
 
 # For config File
 import yaml
-from pathlib import Path
-
-#BASE_DIR = Path(__file__).resolve().parent
-#settings_path = BASE_DIR.parent / 'settings.yml'
 
 @dataclass
 class settings:
