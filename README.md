@@ -6,8 +6,9 @@ Python Code for the Analysis of B Meson Inclusive Spectra of the [SIMBA](https:/
 
 ## Installing
 
-> `python3 -m pip install --index-url https://pypi.org/simple/ --no-deps pysimba`
+> `python3 -m pip install --index-url https://pypi.org/simple/ --no-deps pysimba` not checked yet lol #TODO
 
-## [Documentation](https://github.com/interstella04/PySIMBA)
+## Usage
 
 Run `Result.Run()` while being in `\src` to start the fitting process.
+Furter information in [Documentation](https://github.com/interstella04/PySIMBA).
