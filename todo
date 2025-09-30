@@ -1,8 +1,0 @@
-- Input smoothly, how should someone use the Code, should I write a 'main'? 
-- Thinking about placing Grab.py somewhere else or even in the project
-
-- add other subleading theory, make it accessible through Tag in config file
-
-
-Speeding Things up:
-- change np.append functions in normal list.append or list.extend functions

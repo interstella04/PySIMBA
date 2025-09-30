@@ -1,7 +1,7 @@
 from ROOT import TFile
 import uproot
 import numpy as np
-from Tools import Tools
+from .Tools import Tools
 
 class Grab:
 
@@ -222,79 +222,80 @@ class Grab:
             file.close()
         
         return Fmn_moments
-            
 
-g = Grab()
+    def Grabber():
+        g = Grab()
 
-Fmn_moments = Grab.GrabMoments()
-#print(Fmn_moments['expx4']['Values'][3]) #FIXME: zu wenig Nachkommastellen
-Tools.StoreInPickle(Fmn_moments, '../theory/Fmn_moments')
+        Fmn_moments = Grab.GrabMoments()
+        Tools.StoreInPickle(Fmn_moments, '../theory/Fmn_moments')
 
-#Experimental dictionary from 'measurements/%key%.root'
+        #Experimental dictionary from 'measurements/%key%.root'
 
-# We can change the titles of the Plots here
-data_label_list = ["Babar Inclusive Spectra", "Babar Hadronic Tag", "Babar Semileptonic", "Belle"]
+        # We can change the titles of the Plots here
+        data_label_list = ["Babar Inclusive Spectra", "Babar Hadronic Tag", "Babar Semileptonic", "Belle"]
 
-data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
+        data_tag_list = ["babar_incl", "babar_hadtag", "babar_sem", "belle"]
 
-exp_data = {
-            "babar_incl": Grab.GrabMeasurement(data_tag_list[0],data_label_list[0]),
-            "babar_hadtag": Grab.GrabMeasurement(data_tag_list[1],data_label_list[1]),
-            "babar_sem": Grab.GrabMeasurement(data_tag_list[2],data_label_list[2]),
-            "belle": Grab.GrabMeasurement(data_tag_list[3],data_label_list[3])
+        exp_data = {
+                    "babar_incl": Grab.GrabMeasurement(data_tag_list[0],data_label_list[0]),
+                    "babar_hadtag": Grab.GrabMeasurement(data_tag_list[1],data_label_list[1]),
+                    "babar_sem": Grab.GrabMeasurement(data_tag_list[2],data_label_list[2]),
+                    "belle": Grab.GrabMeasurement(data_tag_list[3],data_label_list[3])
+                    }
+
+        Tools.StoreInPickle(exp_data, '../data/exp_data')
+
+
+        # Theory Dictionary in pickle with all data of '%key%_NNLLNNLO_la%end%.txt' from mb47_mc13_nf3_as207_expx3
+
+        theory_dictionary_expx3 = {
+            "babar_hadtag": g.grab_mids('babar_hadtag'),
+            "babar_incl": g.grab_mids('babar_incl'),
+            "babar_sem": g.grab_mids('babar_sem'),
+            "belle": g.grab_mids('belle')
             }
 
-Tools.StoreInPickle(exp_data, '../data/exp_data')
+        theory_dictionary_expx4 = {
+            "babar_hadtag": g.grab_mids('babar_hadtag', func= 'expx4'),
+            "babar_incl": g.grab_mids('babar_incl', func= 'expx4'),
+            "babar_sem": g.grab_mids('babar_sem', func= 'expx4'),
+            "belle": g.grab_mids('belle', func= 'expx4')
+            }
 
+        theory_dictionary_gaussx3 = {
+            "babar_hadtag": g.grab_mids('babar_hadtag', func= 'gaussx3'),
+            "babar_incl": g.grab_mids('babar_incl', func= 'gaussx3'),
+            "babar_sem": g.grab_mids('babar_sem', func= 'gaussx3'),
+            "belle": g.grab_mids('belle', func= 'gaussx3')
+            }
 
-# Theory Dictionary in pickle with all data of '%key%_NNLLNNLO_la%end%.txt' from mb47_mc13_nf3_as207_expx3
+        Tools.StoreInPickle(theory_dictionary_expx3, '../theory/theory_dictionary_expx3')
+        Tools.StoreInPickle(theory_dictionary_expx4, '../theory/theory_dictionary_expx4')
+        Tools.StoreInPickle(theory_dictionary_gaussx3, '../theory/theory_dictionary_gaussx3')
 
-theory_dictionary_expx3 = {
-    "babar_hadtag": g.grab_mids('babar_hadtag'),
-    "babar_incl": g.grab_mids('babar_incl'),
-    "babar_sem": g.grab_mids('babar_sem'),
-    "belle": g.grab_mids('belle')
-    }
+        #print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
 
-theory_dictionary_expx4 = {
-    "babar_hadtag": g.grab_mids('babar_hadtag', func= 'expx4'),
-    "babar_incl": g.grab_mids('babar_incl', func= 'expx4'),
-    "babar_sem": g.grab_mids('babar_sem', func= 'expx4'),
-    "belle": g.grab_mids('belle', func= 'expx4')
-    }
+        #Theory Dictionary for SSF27 files (the ones calculated with simba c++ code)
 
-theory_dictionary_gaussx3 = {
-    "babar_hadtag": g.grab_mids('babar_hadtag', func= 'gaussx3'),
-    "babar_incl": g.grab_mids('babar_incl', func= 'gaussx3'),
-    "babar_sem": g.grab_mids('babar_sem', func= 'gaussx3'),
-    "belle": g.grab_mids('belle', func= 'gaussx3')
-    }
+        theory_dictionary_SSF27 = {
+            "babar_hadtag": g.grab_theory('babar_hadtag', 'SSF27'),
+            "babar_incl": g.grab_theory('babar_incl', 'SSF27'),
+            "babar_sem": g.grab_theory('babar_sem', 'SSF27'),
+            "belle": g.grab_theory('belle', 'SSF27')
+            }
 
-Tools.StoreInPickle(theory_dictionary_expx3, '../theory/theory_dictionary_expx3')
-Tools.StoreInPickle(theory_dictionary_expx4, '../theory/theory_dictionary_expx4')
-Tools.StoreInPickle(theory_dictionary_gaussx3, '../theory/theory_dictionary_gaussx3')
+        #print(theory_dictionary_SSF27['babar_hadtag']['la10575'])
 
-#print(theory_dictionary_expx3['babar_hadtag']['NNLLNNLO']['la03']['Bins'])
+        Tools.StoreInPickle(theory_dictionary_SSF27, '../theory/theory_dictionary_SSF27')
 
-#Theory Dictionary for SSF27 files (the ones calculated with simba c++ code)
+        # Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
+        hist_nom = {
+            "babar_hadtag": Grab.GrabNomfit(data_tag_list[0],data_label_list[0]),
+            "babar_incl":   Grab.GrabNomfit(data_tag_list[1],data_label_list[1]),
+            "babar_sem":    Grab.GrabNomfit(data_tag_list[2],data_label_list[2]),
+            "belle":        Grab.GrabNomfit(data_tag_list[3],data_label_list[3])
+            }
 
-theory_dictionary_SSF27 = {
-    "babar_hadtag": g.grab_theory('babar_hadtag', 'SSF27'),
-    "babar_incl": g.grab_theory('babar_incl', 'SSF27'),
-    "babar_sem": g.grab_theory('babar_sem', 'SSF27'),
-    "belle": g.grab_theory('belle', 'SSF27')
-    }
+        Tools.StoreInPickle(hist_nom, '../histogram/hist_nom')
 
-#print(theory_dictionary_SSF27['babar_hadtag']['la10575'])
-
-Tools.StoreInPickle(theory_dictionary_SSF27, '../theory/theory_dictionary_SSF27')
-
-# Histogram dictionary from root data 'nomfit_mom_3001_NNLLNNLO_la06_%key%.root'
-hist_nom = {
-    "babar_hadtag": Grab.GrabNomfit(data_tag_list[0],data_label_list[0]),
-    "babar_incl":   Grab.GrabNomfit(data_tag_list[1],data_label_list[1]),
-    "babar_sem":    Grab.GrabNomfit(data_tag_list[2],data_label_list[2]),
-    "belle":        Grab.GrabNomfit(data_tag_list[3],data_label_list[3])
-    }
-
-Tools.StoreInPickle(hist_nom, '../histogram/hist_nom')
+Grab.Grabber()

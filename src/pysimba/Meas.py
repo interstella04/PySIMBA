@@ -1,17 +1,19 @@
 import numpy as np
 import numpy.typing as npt
 
-from Tools import Tools
+from .Tools import Tools
 from dataclasses import dataclass
 
 # For config File
 import yaml
 
+from . import BASE_DIR #Imports from this project ( . ) the base_directory
+
 @dataclass
 class settings:
 
     # Open the yaml (config) file and store the information in config (dictionary)
-    with open('../settings.yml', "r") as f: 
+    with open(BASE_DIR / 'data/settings.yml', "r") as f: 
         config = yaml.safe_load(f)
 
     # Read out Information of config

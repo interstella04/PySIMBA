@@ -11,4 +11,6 @@ Python Code for the Analysis of B Meson Inclusive Spectra of the [SIMBA](https:/
 ## Usage
 
 Run `Result.Run()` while being in `\src` to start the fitting process.
-Furter information in [Documentation](https://github.com/interstella04/PySIMBA).
+
+Further information in [Documentation](https://github.com/interstella04/PySIMBA).
+

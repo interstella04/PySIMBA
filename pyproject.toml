@@ -1,9 +1,18 @@
+[build-system]
+requires = ["uv_build>=0.7.19"]
+build-backend = "uv_build"
+
 [project]
-name = "pysimba"
+name = "py-simba"
 version = "0.1.0"
 description = "Python Code for the Analysis of B Meson Inclusive Spectra"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.13"
+authors = [
+    {name = "Stella Hoffmann", email = "s08shoff@uni-bonn.de"}
+    ]
 dependencies = [
     "dataclasses>=0.8",
     "iminuit>=2.31.1",
@@ -11,3 +20,13 @@ dependencies = [
     "numpy>=2.3.3",
     "pyyaml>=6.0.2",
 ]
+
+[project.urls]
+Homepage = "https://simba.lbl.gov/"
+Documentation = "https://github.com/interstella04/PySIMBA"
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true

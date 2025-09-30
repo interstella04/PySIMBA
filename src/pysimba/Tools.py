@@ -1,21 +1,26 @@
 import pickle
 import numpy as np
 
+from . import BASE_DIR
+
+
 class Tools:
 
     # Stores Dictionarie in Pickle with given Tag for filename
     def StoreInPickle(dictionary: dict, tag: str):
-        with open(tag+".pkl", "wb") as file:
+        with open(BASE_DIR / tag + ".pkl", "wb") as file:
             pickle.dump(dictionary,file)
         return
             
     # Converts Pickle into Dictionaries
     def PickleToDict(pkl_file: str) -> dict:
+        pkl_name = pkl_file + ".pkl"
+        path = BASE_DIR / pkl_name
         """
         Parameter:
         pkl_file: name of the .pkl file. Doesnt't include the string '.pkl'
         """
-        with open(pkl_file + ".pkl", "rb") as file:
+        with open(path, "rb") as file:
             data = pickle.load(file)
         return data
     

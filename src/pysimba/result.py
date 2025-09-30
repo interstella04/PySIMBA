@@ -1,12 +1,16 @@
+# Other packages
 import numpy as np
 import matplotlib.pyplot as plt 
-from Meas import Theory
-from Meas import settings
 from matplotlib import rc
-from Tools import Tools
-from fitter import Fitter
 
+# This package
+from .Meas import Theory
+from .Meas import settings
+from .Tools import Tools
+from .fitter import Fitter
+from . import BASE_DIR
 
+# Setting the text font on the plots
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 plt.rcParams.update({'font.size': 13})
@@ -16,9 +20,6 @@ class Result:
     def __init__(self):
         #Dictionary with experimental data
         self.ExpData = Tools.PickleToDict(settings.config["MeasurementPath"])
-        
-        #Histogram Dictionary from Root Data
-        self.HistNomFit = Tools.PickleToDict("../theory/hist_nom")
 
     def PrepareExpData(self, key: str, div_bin: bool = False):
 
@@ -142,7 +143,10 @@ class Result:
 
         x, y, dx, dy, title, ylabel = Result.PrepareExpData(self, key, div_bin)
         Result.SimplePlot(ax, x, y, dx, dy, title, ylabel, box_opt)
-        fig.savefig('../data/' + key, dpi = 500)
+
+        filename_exp = settings.config["ExpPath"] + key
+
+        fig.savefig(BASE_DIR / filename_exp, dpi = 500)
         plt.close()
 
 
@@ -153,7 +157,10 @@ class Result:
         Result.SimpleHistogram(a, self.ExpData[key]['Bins'], pred, color= 'red')
         Result.SimplePlot(a, x, y, dx, dy, title, ylabel, box_opt = False, min_y= 0)
         Result.AddFitInformation(a, fit_obj)
-        f.savefig(settings.config["ResultPath"] + settings.config["Tag"] + '_' + key, dpi = 500)
+
+        filename_fit = settings.config["ResultPath"] + settings.config["Tag"] + '_' + key
+
+        f.savefig(BASE_DIR / filename_fit, dpi = 500)
         plt.close()
 
         return
@@ -161,7 +168,10 @@ class Result:
     def PrintResultToTxt(fit_obj: Fitter):
         print('Writing ...')
 
-        with open(settings.config["ResultPath"] + settings.config['Tag'] + '.txt', 'w') as file:
+        filename = settings.config["ResultPath"] + settings.config["Tag"] + ".txt"
+        path = BASE_DIR / filename
+
+        with open(path, 'w') as file:
             file.write('Results for %d Parameters\n' % fit_obj.NumbOfPar)
 
             # Fit Results
@@ -194,4 +204,4 @@ class Result:
 
         return
 
-Result.Run()
+#Result.Run()

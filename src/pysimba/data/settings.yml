@@ -6,7 +6,10 @@
 Tag: result
 
 # Path to store the result files
-ResultPath: ../result/
+ResultPath: data/result/
+
+# Path to plot just experimental data
+ExpPath: data/exp/
 
 ######################################################
 # Theory Configuration
@@ -21,18 +24,18 @@ TheoryTag: 'expx3'
 SubleadingTheoryTag: 'SSF27'
 
 # Path to the dictionaries containing the used theory
-TheoryPath: ../theory/theory_dictionary_expx3
-SubleadingTheoryPath: ../theory/theory_dictionary_SSF27
+TheoryPath: data/theory/theory_dictionary_expx3
+SubleadingTheoryPath: data/theory/theory_dictionary_SSF27
 
 # Path for constraints and moments
-TheoryMomentsPath: ../theory/Fmn_moments
+TheoryMomentsPath: data/theory/Fmn_moments
 
 ######################################################
 # Measurement Configuration
 ######################################################
 
 # Path to measurement dictionary
-MeasurementPath: ../data/exp_data
+MeasurementPath: data/exp/exp_data
 
 ## Which measurements should be included in the fit?
 KeyOrder: ["belle", "babar_hadtag", "babar_incl"]
