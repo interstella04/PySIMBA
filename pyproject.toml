@@ -3,7 +3,7 @@ requires = ["uv_build>=0.7.19"]
 build-backend = "uv_build"
 
 [project]
-name = "py-simba"
+name = "pysimba"
 version = "0.1.0"
 description = "Python Code for the Analysis of B Meson Inclusive Spectra"
 readme = "README.md"
@@ -14,12 +14,20 @@ authors = [
     {name = "Stella Hoffmann", email = "s08shoff@uni-bonn.de"}
     ]
 dependencies = [
-    "dataclasses>=0.8",
     "iminuit>=2.31.1",
     "matplotlib>=3.10.6",
     "numpy>=2.3.3",
     "pyyaml>=6.0.2",
 ]
+
+
+[tool.uv.build]
+editable = true
+package-dir = "src"
+
+[tool.uv.sources]
+pysimba = { path = "." }
+
 
 [project.urls]
 Homepage = "https://simba.lbl.gov/"
