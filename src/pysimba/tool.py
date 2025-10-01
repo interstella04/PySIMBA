@@ -5,13 +5,12 @@ from . import BASE_DIR
 
 
 class Tools:
-
     # Stores Dictionarie in Pickle with given Tag for filename
     def StoreInPickle(dictionary: dict, tag: str):
         with open(BASE_DIR / tag + ".pkl", "wb") as file:
-            pickle.dump(dictionary,file)
+            pickle.dump(dictionary, file)
         return
-            
+
     # Converts Pickle into Dictionaries
     def PickleToDict(pkl_file: str) -> dict:
         pkl_name = pkl_file + ".pkl"
@@ -23,15 +22,17 @@ class Tools:
         with open(path, "rb") as file:
             data = pickle.load(file)
         return data
-    
+
     # Returns SubMatrix at given indices of a larger Matrix
-    def GetSub(matrix, row_lwb: int, row_upb: int, col_lwb: int, col_upb: int) -> list[list[float]]:
-        return matrix[row_lwb:row_upb+1, col_lwb:col_upb+1]
-    
+    def GetSub(
+        matrix, row_lwb: int, row_upb: int, col_lwb: int, col_upb: int
+    ) -> list[list[float]]:
+        return matrix[row_lwb : row_upb + 1, col_lwb : col_upb + 1]
+
     # Combines two matrices, by making a larger matrix
     def SetSub(matrix, row_lwb: int, col_lwb: int, sub_matrix):
         rows, cols = sub_matrix.shape
-        matrix[row_lwb:row_lwb+rows, col_lwb:col_lwb+cols] = sub_matrix
+        matrix[row_lwb : row_lwb + rows, col_lwb : col_lwb + cols] = sub_matrix
         return
 
     # Forces a positive definite Matrice
@@ -63,8 +64,8 @@ class Tools:
         # Reconstruct the matrix
         A_pd = eigenvectors @ np.diag(eigenvalues_clipped) @ eigenvectors.T
 
-        return A_pd  
-    
+        return A_pd
+
     # Turns every string of a possible Basis/ or Subleading Basis Expansion into the corresponding lambda
     # i.e '0575' -> 0.575 or '10575' -> 0.575
     def StrToLambda(BasisExpansion: str) -> float:
@@ -73,33 +74,32 @@ class Tools:
         """
 
         # Step 1: Remove leading 1 or 2 if present
-        if BasisExpansion[0] in ('1', '2'):
+        if BasisExpansion[0] in ("1", "2"):
             BasisExpansion = BasisExpansion[1:]
-        
+
         # Step 2: If only 1 digit remains -> interpret as X.X
         if len(BasisExpansion) == 1:
             return float(f"{BasisExpansion}.{BasisExpansion}")
-        
+
         # Step 3: Otherwise, take the last up to 3 digits as fraction
         fraction_digits = BasisExpansion[-3:]
-        
+
         # Step 4: Remove leading zeros for correct formatting
-        fraction_str = fraction_digits.lstrip('0')
-        
+        fraction_str = fraction_digits.lstrip("0")
+
         # Step 5: Handle case where all digits were zero
         if not fraction_str:
-            fraction_str = '0'
-        
+            fraction_str = "0"
+
         # Step 6: Convert to 0.xxx float
         return float(f"0.{fraction_str}")
-    
-    def range_2d(x, y, x0 = 0, y0 = 0, xstep = 1, ystep = 1):
+
+    def range_2d(x, y, x0=0, y0=0, xstep=1, ystep=1):
         for i in range(x0, x, xstep):
             for j in range(y0, y, ystep):
                 yield i, j
 
-
-    def range_3d(x, y, z, x0 = 0, y0 = 0, z0 = 0, xstep = 1, ystep = 1, zstep = 1):
+    def range_3d(x, y, z, x0=0, y0=0, z0=0, xstep=1, ystep=1, zstep=1):
         for i in range(x0, x, xstep):
             for j in range(y0, y, ystep):
                 for k in range(z0, z, zstep):
