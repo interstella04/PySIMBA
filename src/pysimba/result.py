@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 
 # This package
-from .Meas import Theory
-from .Meas import settings
-from .Tools import Tools
+from .theory import Theory
+from .theory import settings
+from .tool import Tools
 from .fitter import Fitter
 from . import BASE_DIR
 
@@ -203,5 +203,3 @@ class Result:
         res.ShowResults(fit_obj, False, False)
 
         return
-
-#Result.Run()

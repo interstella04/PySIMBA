@@ -1,8 +1,8 @@
 import numpy as np
-from .Tools import Tools
+from .tool import Tools
 from iminuit import Minuit
-from .Meas import settings
-from .Meas import Theory
+from .theory import Theory
+from .theory import settings
 
 class Fitter:
      

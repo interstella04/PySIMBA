@@ -1,7 +1,7 @@
 from ROOT import TFile
 import uproot
 import numpy as np
-from .Tools import Tools
+from .tool import Tools
 
 class Grab:
 
