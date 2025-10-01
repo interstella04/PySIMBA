@@ -1,4 +1,3 @@
-import numpy as np
 from .tool import Tools
 from iminuit import Minuit
 from .theory import Theory
@@ -45,8 +44,7 @@ class Fitter:
         self.mb = mes.mb
 
         # Apply minos algorithm
-        if with_minos == True:
-            n.minos()
+        if with_minos: n.minos()
         
         self.m  = n
         self.theo = mes

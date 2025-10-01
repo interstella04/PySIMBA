@@ -36,7 +36,7 @@ class Result:
         scale = settings.config["Scale"].get(key, 1) # If there is a scale defined in settings.yml take that, else scale = 1
 
 
-        if(div_bin == False):
+        if not div_bin:
             y = self.ExpData[key]['dBFs']
             dy = self.ExpData[key]['dBFErrors'] 
         else:
