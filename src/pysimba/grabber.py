@@ -79,7 +79,8 @@ class Grab:
         }
 
         # Open File and grab measurement histogram
-        f = TFile("../../../simba/Cpp/share/simba/measurements/" + Tag + ".root")
+
+        f = TFile("../../../../simba/Cpp/share/simba/measurements/" + Tag + ".root")
         h = f.Get(Tag)
         # Determine the number of bins
         nbins = h.GetNbinsX()
@@ -150,7 +151,7 @@ class Grab:
             bins = []
             if mid == "SSF27":
                 file = open(
-                    "../../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_SSF27/"
+                    "../../../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_SSF27/"
                     + key
                     + "_SSF27_"
                     + end
@@ -159,7 +160,7 @@ class Grab:
                 )
             else:
                 file = open(
-                    "../../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_"
+                    "../../../../simba/Cpp/share/simba/theory/mb47_mc13_nf3_as207_"
                     + functional
                     + "/"
                     + key
@@ -221,7 +222,7 @@ class Grab:
     def GrabNomfit(Tag, Label):
         hist_dict = {"Label": Label, "Bins": np.array([]), "Values": np.array([])}
         file = uproot.open(
-            "../../../simba/Cpp/share/simba/measurements/script/nomfit_mom_3001_NNLLNNLO_la06_"
+            "../../../../simba/Cpp/share/simba/measurements/script/nomfit_mom_3001_NNLLNNLO_la06_"
             + Tag
             + "_fit.root"
         )
@@ -248,7 +249,7 @@ class Grab:
                 strip_string = "# bin ="
 
             file = open(
-                "../../../simba/Cpp/share/simba/theory/Fmn_moments_" + name + ".txt",
+                "../../../../simba/Cpp/share/simba/theory/Fmn_moments_" + name + ".txt",
                 "r",
             )
             for i, line in enumerate(file):

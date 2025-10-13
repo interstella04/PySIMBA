@@ -110,3 +110,6 @@ class Tools:
         subscript = "".join(str(i) for i in range(n))
         # Format as c_{...}
         return f"c_{{{subscript}}}"
+
+    def merge_paths(base, rest_path: str):
+        return base / rest_path
