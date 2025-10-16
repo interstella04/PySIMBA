@@ -6,7 +6,7 @@ Python Code for the Analysis of B Meson Inclusive Spectra of the [SIMBA](https:/
 
 ## Installing
 
-> `python3 -m pip install --index-url https://pypi.org/simple/ --no-deps pysimba` not checked yet lol #TODO
+> Work in progress
 
 ## Usage
 
