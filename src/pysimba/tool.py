@@ -113,3 +113,9 @@ class Tools:
 
     def merge_paths(base, rest_path: str):
         return base / rest_path
+
+    # Useful functions to add a measurement to the code
+    # ATTENTION: These functions will change the data in the dictionary
+
+    def combine_dic1_with_dic2(dic_old: dict, dic_new: dict, path_new: str, new_key: str)-> dict:
+        pass
