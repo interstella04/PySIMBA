@@ -1,7 +1,38 @@
 import pickle
 import numpy as np
+from dataclasses import dataclass
 
 from . import BASE_DIR
+
+# For config File
+import yaml
+
+@dataclass
+class settings:
+    # Open the yaml (config) file and store the information in config (dictionary)
+    with open(BASE_DIR / "data/settings.yml", "r") as f:
+        config = yaml.safe_load(f)
+
+    # Read out Information of config
+    SubLeadCoefficients = config["SubLeadCoefficients"]
+    TheoryOrder = config["TheoryOrder"]
+    SubLeadTheoryOrder = config["SubLeadTheoryOrder"]
+    FitVars = config["FitVars"]
+    KeyOrder = config["KeyOrder"]
+    BasisExpansion = config["BasisExpansion"]
+    SubLeadBasisExpansion = config["SubLeadBasisExpansion"]
+
+    rho2: float = config["Constants"]["rho2"]
+    mB: float = config["Constants"]["mB"]
+    La2: float = config["Constants"]["La2"]
+    N0: float = config["Constants"]["N0"]
+    VtbVts: float = config["Constants"]["VtbVts"]
+    C2C7: float = config["Constants"]["C2C7"]
+    C2C2: float = config["Constants"]["C2C2"]
+    C8C7: float = config["Constants"]["C8C7"]
+    C8C8: float = config["Constants"]["C8C8"]
+    C2C8: float = config["Constants"]["C2C8"]
+
 
 class Tools:
     # Stores Dictionarie in Pickle with given Tag for filename
@@ -122,22 +153,24 @@ class Tools:
         new = Tools.PickleToDict(new_path)
 
         Tools.StoreInPickle(old, old_path+"_save")
-        print("You've stored the old dictionary in a '_save' pickle. \n")
+        print("You've stored the old dictionary in a '_save' pickle. You will find it at the location of your old dictionary.")
 
         old[new_key] = new
 
         Tools.StoreInPickle(old, old_path)
+        print("______________________________________________________________________________________")
         print("You just overwrote your old dictionary. The old one and the new one should now be combined. \n \n If you have done this for every nessecary dictionary (Measurements, Leading and Subleading Theory) you should now change the settings.yml file, so that it includes the new measurement. You do that, when you add your 'key' to the 'KeyOrder' \n")
+        print("______________________________________________________________________________________")
 
         test = Tools.PickleToDict(old_path)
         print("The new keys of the dictionary are as follows, please check if your new meaurement is part of it.") 
-        print("___________________________________________")
+        print("______________________________________________________________________________________")
         print(test.keys())
-        print("___________________________________________")
+        print("______________________________________________________________________________________")
 
         return
     
-    def AddNewMeasurement():
+    #def AddNewMeasurement():
         print("To which dictionary do you want to add a dictionary? Please type")
         print(" '1' - for Measurement")
         print(" '2' - for Leading Theory")
@@ -160,15 +193,30 @@ class Tools:
         
         return
     
-    #def test_combining():
-        measurements = {
-            "measurement_1": {"temperature": 22.5, "humidity": 55},
-            "measurement_2": {"temperature": 23.0, "humidity": 57}
-        }
+    def AddNewMeasurement():
+        ##########################################################################
+        # This is a test function, remove when real usage starts
+        # This one is here to make sure that the dictionaries stay as they are for now
+        ##########################################################################
+        print("To which dictionary do you want to add a dictionary? Please type")
+        print("______________________________________________________________________________________")
+        print(" '1' - for Measurement")
+        print(" '2' - for Leading Theory")
+        print(" '3' - for SubLeading Theory")
+        print("______________________________________________________________________________________")
 
-        new_measurement = {"temperature": 24.1, "humidity": 52}
+        choice = input("Enter your choice: ").strip()
+        print("______________________________________________________________________________________")
 
-        Tools.StoreInPickle(measurements, "data/test_old")
-        Tools.StoreInPickle(new_measurement, "data/test_new")
+        name = input("Enter the name of the pickle file (without .pkl) which you want to add to the chosen dictionary:").strip()
+        print("______________________________________________________________________________________")
 
-        Tools.combine_dict_old_with_dict_new("data/test_old", "data/test_new", "measurement_3")
+        new_key = input("Now enter the key of your new measurement (e.g 'belle2'):").strip()
+        print("______________________________________________________________________________________")
+
+        if choice == '1': 
+            Tools.combine_dict_old_with_dict_new("data/test_old", "data/" + name, new_key)
+        else:
+            print('Not a valid choice, because this is a test!!!')
+        
+        return

@@ -16,7 +16,9 @@ def main():
         # Runs the Fit. This file gets executed with calling python3 pysimba
         Result.Run()
     elif choice == "2":
+        print("______________________________________________________________________________________")
         print("Note: To add a new measurement you will need access to the directory 'data/add/'. There you will have to put your pickle file containing the dictionary you want to add. If that is not the case, please do so.")
+        print("______________________________________________________________________________________")
         added = input("Is your file in 'data/add/' ? (y/n)").strip()
         if added == "y":
             Tools.AddNewMeasurement()
@@ -25,6 +27,8 @@ def main():
             return
         else:
             print("Not a valid option. Please use 'y' or 'n'")
+    else:
+        print("Not a valid option!")
     return
     
 

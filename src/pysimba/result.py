@@ -5,8 +5,7 @@ from matplotlib import rc
 
 # This package
 from .theory import Theory
-from .theory import settings
-from .tool import Tools
+from .tool import Tools, settings
 from .fitter import Fitter
 from . import BASE_DIR
 
