@@ -7,6 +7,7 @@ import pathlib
 
 BASE_DIR = pathlib.Path(__file__).parent.resolve()
 
+
 class Grab:
     def __init__(self):
         # Lambdas and endings of the filenames for expx folder and SSF folder
@@ -301,10 +302,18 @@ class Grab:
         exp_location = "../../../../simba/Cpp/share/simba/measurements/"
 
         exp_data = {
-            "babar_incl": Grab.GrabMeasurement(data_tag_list[0], data_label_list[0], exp_location),
-            "babar_hadtag": Grab.GrabMeasurement(data_tag_list[1], data_label_list[1], exp_location),
-            "babar_sem": Grab.GrabMeasurement(data_tag_list[2], data_label_list[2], exp_location),
-            "belle": Grab.GrabMeasurement(data_tag_list[3], data_label_list[3], exp_location),
+            "babar_incl": Grab.GrabMeasurement(
+                data_tag_list[0], data_label_list[0], exp_location
+            ),
+            "babar_hadtag": Grab.GrabMeasurement(
+                data_tag_list[1], data_label_list[1], exp_location
+            ),
+            "babar_sem": Grab.GrabMeasurement(
+                data_tag_list[2], data_label_list[2], exp_location
+            ),
+            "belle": Grab.GrabMeasurement(
+                data_tag_list[3], data_label_list[3], exp_location
+            ),
         }
 
         Tools.StoreInPickle(exp_data, BASE_DIR / "data/exp/exp_data")

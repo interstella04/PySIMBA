@@ -3,7 +3,8 @@ import numpy.typing as npt
 
 from .tool import Tools, settings
 
-from . import BASE_DIR  # Imports from this project ( . ) the base_directory
+# from . import BASE_DIR  # Imports from this project ( . ) the base_directory
+
 
 class Theory:
     # Define types

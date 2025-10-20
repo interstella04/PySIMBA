@@ -2,10 +2,15 @@ import pickle
 import numpy as np
 from dataclasses import dataclass
 
-from . import BASE_DIR
+import pathlib
+
+# To make the path of the Base directory of the file easily accesible in the whole Code
+BASE_DIR = pathlib.Path(__file__).parent.resolve()
+
 
 # For config File
 import yaml
+
 
 @dataclass
 class settings:
@@ -142,7 +147,7 @@ class Tools:
         # Format as c_{...}
         return f"c_{{{subscript}}}"
 
-    #def merge_paths(base, rest_path: str):
+    # def merge_paths(base, rest_path: str):
     #    return base / rest_path
 
     # Useful functions to add a measurement to the code
@@ -152,25 +157,39 @@ class Tools:
         old = Tools.PickleToDict(old_path)
         new = Tools.PickleToDict(new_path)
 
-        Tools.StoreInPickle(old, old_path+"_save")
-        print("You've stored the old dictionary in a '_save' pickle. You will find it at the location of your old dictionary.")
+        Tools.StoreInPickle(old, old_path + "_save")
+        print(
+            "You've stored the old dictionary in a '_save' pickle. You will find it at the location of your old dictionary."
+        )
 
         old[new_key] = new
 
         Tools.StoreInPickle(old, old_path)
-        print("______________________________________________________________________________________")
-        print("You just overwrote your old dictionary. The old one and the new one should now be combined. \n \n If you have done this for every nessecary dictionary (Measurements, Leading and Subleading Theory) you should now change the settings.yml file, so that it includes the new measurement. You do that, when you add your 'key' to the 'KeyOrder' \n")
-        print("______________________________________________________________________________________")
+        print(
+            "______________________________________________________________________________________"
+        )
+        print(
+            "You just overwrote your old dictionary. The old one and the new one should now be combined. \n \n If you have done this for every nessecary dictionary (Measurements, Leading and Subleading Theory) you should now change the settings.yml file, so that it includes the new measurement. You do that, when you add your 'key' to the 'KeyOrder' \n"
+        )
+        print(
+            "______________________________________________________________________________________"
+        )
 
         test = Tools.PickleToDict(old_path)
-        print("The new keys of the dictionary are as follows, please check if your new meaurement is part of it.") 
-        print("______________________________________________________________________________________")
+        print(
+            "The new keys of the dictionary are as follows, please check if your new meaurement is part of it."
+        )
+        print(
+            "______________________________________________________________________________________"
+        )
         print(test.keys())
-        print("______________________________________________________________________________________")
+        print(
+            "______________________________________________________________________________________"
+        )
 
         return
-    
-    #def AddNewMeasurement():
+
+        # def AddNewMeasurement():
         print("To which dictionary do you want to add a dictionary? Please type")
         print(" '1' - for Measurement")
         print(" '2' - for Leading Theory")
@@ -178,45 +197,71 @@ class Tools:
 
         choice = input("Enter your choice: ").strip()
 
-        name = input("Enter the name of the pickle file (without .pkl) which you want to add to the chosen dictionary:").strip()
+        name = input(
+            "Enter the name of the pickle file (without .pkl) which you want to add to the chosen dictionary:"
+        ).strip()
 
-        new_key = input("Now enter the key of your new measurement (e.g 'belle2'):").strip()
+        new_key = input(
+            "Now enter the key of your new measurement (e.g 'belle2'):"
+        ).strip()
 
-        if choice == '1': 
-            Tools.combine_dict_old_with_dict_new(settings.config["MeasurementPath"], "data/add/" + name, new_key)
-        elif choice == '2':
-            Tools.combine_dict_old_with_dict_new(settings.config["TheoryPath"], "data/add/" + name, new_key)
-        elif choice == '3':
-            Tools.combine_dict_old_with_dict_new(settings.config["SubleadingTheoryPath"], "data/add/" + name, new_key)
+        if choice == "1":
+            Tools.combine_dict_old_with_dict_new(
+                settings.config["MeasurementPath"], "data/add/" + name, new_key
+            )
+        elif choice == "2":
+            Tools.combine_dict_old_with_dict_new(
+                settings.config["TheoryPath"], "data/add/" + name, new_key
+            )
+        elif choice == "3":
+            Tools.combine_dict_old_with_dict_new(
+                settings.config["SubleadingTheoryPath"], "data/add/" + name, new_key
+            )
         else:
-            print('Not a valid choice!')
-        
+            print("Not a valid choice!")
+
         return
-    
+
     def AddNewMeasurement():
         ##########################################################################
         # This is a test function, remove when real usage starts
         # This one is here to make sure that the dictionaries stay as they are for now
         ##########################################################################
         print("To which dictionary do you want to add a dictionary? Please type")
-        print("______________________________________________________________________________________")
+        print(
+            "______________________________________________________________________________________"
+        )
         print(" '1' - for Measurement")
         print(" '2' - for Leading Theory")
         print(" '3' - for SubLeading Theory")
-        print("______________________________________________________________________________________")
+        print(
+            "______________________________________________________________________________________"
+        )
 
         choice = input("Enter your choice: ").strip()
-        print("______________________________________________________________________________________")
+        print(
+            "______________________________________________________________________________________"
+        )
 
-        name = input("Enter the name of the pickle file (without .pkl) which you want to add to the chosen dictionary:").strip()
-        print("______________________________________________________________________________________")
+        name = input(
+            "Enter the name of the pickle file (without .pkl) which you want to add to the chosen dictionary:"
+        ).strip()
+        print(
+            "______________________________________________________________________________________"
+        )
 
-        new_key = input("Now enter the key of your new measurement (e.g 'belle2'):").strip()
-        print("______________________________________________________________________________________")
+        new_key = input(
+            "Now enter the key of your new measurement (e.g 'belle2'):"
+        ).strip()
+        print(
+            "______________________________________________________________________________________"
+        )
 
-        if choice == '1': 
-            Tools.combine_dict_old_with_dict_new("data/test_old", "data/" + name, new_key)
+        if choice == "1":
+            Tools.combine_dict_old_with_dict_new(
+                "data/test_old", "data/" + name, new_key
+            )
         else:
-            print('Not a valid choice, because this is a test!!!')
-        
+            print("Not a valid choice, because this is a test!!!")
+
         return
