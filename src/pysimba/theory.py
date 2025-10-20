@@ -1,40 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 
-from .tool import Tools
-from dataclasses import dataclass
-
-# For config File
-import yaml
-
-from . import BASE_DIR  # Imports from this project ( . ) the base_directory
-
-
-@dataclass
-class settings:
-    # Open the yaml (config) file and store the information in config (dictionary)
-    with open(BASE_DIR / "data/settings.yml", "r") as f:
-        config = yaml.safe_load(f)
-
-    # Read out Information of config
-    SubLeadCoefficients = config["SubLeadCoefficients"]
-    TheoryOrder = config["TheoryOrder"]
-    SubLeadTheoryOrder = config["SubLeadTheoryOrder"]
-    FitVars = config["FitVars"]
-    KeyOrder = config["KeyOrder"]
-    BasisExpansion = config["BasisExpansion"]
-    SubLeadBasisExpansion = config["SubLeadBasisExpansion"]
-
-    rho2: float = config["Constants"]["rho2"]
-    mB: float = config["Constants"]["mB"]
-    La2: float = config["Constants"]["La2"]
-    N0: float = config["Constants"]["N0"]
-    VtbVts: float = config["Constants"]["VtbVts"]
-    C2C7: float = config["Constants"]["C2C7"]
-    C2C2: float = config["Constants"]["C2C2"]
-    C8C7: float = config["Constants"]["C8C7"]
-    C8C8: float = config["Constants"]["C8C8"]
-    C2C8: float = config["Constants"]["C2C8"]
+from .tool import Tools, settings
 
 
 class Theory:

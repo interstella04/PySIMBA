@@ -1,7 +1,6 @@
-from .tool import Tools
+from .tool import Tools, settings
 from iminuit import Minuit
 from .theory import Theory
-from .theory import settings
 
 
 class Fitter:

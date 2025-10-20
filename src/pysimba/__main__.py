@@ -1,4 +1,4 @@
-from .result import Result
+from .main import main
 
-# Runs the Fit. This file gets executed with calling python3 pysimba
-Result.Run()
+if __name__ == "__main__":
+    main()

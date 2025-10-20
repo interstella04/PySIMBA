@@ -5,10 +5,8 @@ from matplotlib import rc
 
 # This package
 from .theory import Theory
-from .theory import settings
-from .tool import Tools
+from .tool import Tools, settings, BASE_DIR
 from .fitter import Fitter
-from . import BASE_DIR
 
 # Setting the text font on the plots
 rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]})

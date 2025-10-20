@@ -100,3 +100,9 @@ Constants:
 
 ## Default value for d2 is 0
 SubLeadCoefficients: [0.]
+
+######################################################
+#  You want to add a new measurement?
+######################################################
+
+NewMeasPath: data/theory/name_of_new_meas_dictionary

@@ -1,4 +1,9 @@
-import pathlib
+from .main import main
 
-# To make the path of the Base directory of the file easily accesible in the whole Code
-BASE_DIR = pathlib.Path(__file__).parent.resolve()
+from .fitter import Fitter
+
+from .theory import Theory
+
+from .result import Result
+
+from .tool import settings, Tools, BASE_DIR
