@@ -8,6 +8,7 @@ Python Code for the Analysis of B Meson Inclusive Spectra of the [SIMBA](https:/
 
 If your shell is located in the PySimba Directory, which you can clone you can install the package locally with:
 > `pip install -e .` 
+
 Or the path to the package instead of '.'
 
 ## Usage
