@@ -189,7 +189,7 @@ class Tools:
 
         return
 
-        # def AddNewMeasurement():
+    def AddNewMeasurement():
         print("To which dictionary do you want to add a dictionary? Please type")
         print(" '1' - for Measurement")
         print(" '2' - for Leading Theory")
@@ -222,7 +222,7 @@ class Tools:
 
         return
 
-    def AddNewMeasurement():
+    #def AddNewMeasurement():
         ##########################################################################
         # This is a test function, remove when real usage starts
         # This one is here to make sure that the dictionaries stay as they are for now
