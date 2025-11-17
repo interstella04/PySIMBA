@@ -1,7 +1,0 @@
-Results for 4 Parameters
-Chisq = 34.3231 
-mb = 4.7389 
-norm = 0.00501 
-a1 = 0.04943 
-a2 = 0.09100 
-a3 = -0.01569 

@@ -13,13 +13,13 @@ Or the path to the package instead of '.'
 
 ## Usage
 If you run it in the python terminal:
-> `import pysimba`
-> `pysimba.main()`
+> `import py_simba`
+> `py_simba.main()`
 
 Or just test other functions alone.
 
 If you want to run it just as a package in your shell:
-> `python3 -m pysimba`
+> `python3 -m py_simba`
 
 Further information in [Documentation](https://github.com/interstella04/PySIMBA).
 
