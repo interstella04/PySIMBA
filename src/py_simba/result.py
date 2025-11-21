@@ -66,7 +66,7 @@ class Result:
         ylabel: str = None,
         box_opt: bool = False,
         color: str = "black",
-        min_y=None,
+        min_y=None
     ):
         # Set Box options
         if box_opt:
